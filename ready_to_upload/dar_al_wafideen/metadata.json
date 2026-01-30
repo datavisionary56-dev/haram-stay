@@ -1,0 +1,13 @@
+{
+    "name": "فندق دار الوافدين",
+    "distance_to_haram": "800 متر",
+    "price_per_night": "300 ريال",
+    "last_10_days_price": "8000 ريال",
+    "images": [
+        "dar_al_wafideen_1.webp",
+        "dar_al_wafideen_2.webp",
+        "dar_al_wafideen_3.webp",
+        "dar_al_wafideen_4.webp",
+        "dar_al_wafideen_5.webp"
+    ]
+}
