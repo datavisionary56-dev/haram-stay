@@ -38,7 +38,8 @@ export default function HotelCard({ hotel }: HotelCardProps) {
 
   // Determine link destination: Gallery for Dar Al Wafideen, otherwise details page
   const isCinematic = hotel.name?.includes("دار الوافدين");
-  const linkHref = isCinematic ? "/gallery" : `/hotels/${hotel.id}`;
+  // const linkHref = isCinematic ? "/gallery" : `/hotels/${hotel.id}`;
+  const linkHref = `/hotels/${hotel.id}`;
 
   return (
     <motion.div
