@@ -19,6 +19,9 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 // Initialize Firestore
 const db = getFirestore(app);
 
+// Initialize Storage
+const storage = getStorage(app);
+
 // Uncomment below if you experience connection issues in specific environments
 // const db = initializeFirestore(app, {
 //   experimentalForceLongPolling: true,
@@ -28,5 +31,5 @@ if (typeof window !== "undefined") {
   console.log("Firebase initialized with project ID:", firebaseConfig.projectId);
 }
 
-export { app, db };
+export { app, db, storage };
 export const auth = getAuth(app);
