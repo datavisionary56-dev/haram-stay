@@ -52,13 +52,22 @@ export default function AdminSecretPage() {
         // 2. Upload Images to Firebase Storage
         const imageUrls: string[] = [];
         if (files && files.length > 0) {
-            setStatus(`جاري رفع ${files.length} صور...`);
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                const storageRef = ref(storage, `hotels/${folderName}/${Date.now()}_${file.name}`);
-                await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(storageRef);
-                imageUrls.push(url);
+                setStatus(`جاري رفع الصورة (${i + 1} من ${files.length}): ${file.name}...`);
+                
+                try {
+                    const storageRef = ref(storage, `hotels/${folderName}/${Date.now()}_${file.name}`);
+                    const snapshot = await uploadBytes(storageRef, file);
+                    const url = await getDownloadURL(snapshot.ref);
+                    imageUrls.push(url);
+                    console.log(`Uploaded ${file.name}: ${url}`);
+                } catch (uploadError: any) {
+                    console.error(`Error uploading ${file.name}:`, uploadError);
+                    setStatus(`فشل رفع الصورة ${file.name}: ${uploadError.message}`);
+                    // Continue with other files or stop? Let's stop to let user know.
+                    throw new Error(`فشل رفع الصورة ${file.name}: ${uploadError.message}`);
+                }
             }
         }
 
