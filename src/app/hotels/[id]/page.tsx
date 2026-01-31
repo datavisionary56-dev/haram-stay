@@ -164,6 +164,18 @@ export default function HotelDetailsPage() {
                       data.price = 2500;
                   }
               }
+              
+              // Force Safwa Data if needed
+              if (data.name && (data.name.includes('الصفوة') || data.name.includes('Safwa'))) {
+                  if (!data.images || data.images.length === 0) {
+                      data.images = SAFWA_FALLBACK.images;
+                  }
+                  if (!data.description) {
+                      data.description = SAFWA_FALLBACK.description;
+                  }
+                  if (!data.location) data.location = SAFWA_FALLBACK.location;
+                  if (!data.price) data.price = SAFWA_FALLBACK.price;
+              }
 
               setHotel({ id: docSnap.id, ...data } as HotelDetails);
             } else {
