@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import { FaUpload, FaSave, FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
+import { db, storage } from '@/lib/firebase';
+import { collection, addDoc, updateDoc, doc, setDoc, getDocs, query, where, arrayUnion } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function AdminSecretPage() {
   const [loading, setLoading] = useState(false);
@@ -27,42 +30,167 @@ export default function AdminSecretPage() {
     setStatus('جاري المعالجة...');
     
     try {
-        const formData = new FormData();
-        formData.append('hotelId', selectedHotel);
+        let hotelId = selectedHotel;
+        let hotelName = "";
+        let folderName = "";
+
+        // 1. Determine Hotel Info
         if (selectedHotel === 'new_hotel') {
-             formData.append('newHotelName', newHotelName);
+            if (!newHotelName) throw new Error("اسم الفندق الجديد مطلوب");
+            hotelName = newHotelName;
+            // Generate a simple ID for new hotel or let Firestore generate it later
+            // For storage folder, let's sanitize the name
+            folderName = newHotelName.replace(/\s+/g, '_').toLowerCase().replace(/[^a-z0-9_]/g, '');
+            if (!folderName) folderName = "new_hotel_" + Date.now();
+        } else {
+            folderName = selectedHotel;
+            if (selectedHotel === 'fairmont') hotelName = "فندق فيرمونت مكة";
+            else if (selectedHotel === 'dar_al_wafideen') hotelName = "فندق دار الوافدين";
+            else hotelName = selectedHotel;
+        }
+
+        // 2. Upload Images to Firebase Storage
+        const imageUrls: string[] = [];
+        if (files && files.length > 0) {
+            setStatus(`جاري رفع ${files.length} صور...`);
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const storageRef = ref(storage, `hotels/${folderName}/${Date.now()}_${file.name}`);
+                await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(storageRef);
+                imageUrls.push(url);
+            }
+        }
+
+        // 3. Prepare Data for Firestore
+        const updateData: any = {
+            updatedAt: new Date().toISOString()
+        };
+
+        if (hotelName) updateData.name = hotelName;
+
+        if (priceNightly) updateData.price = Number(priceNightly);
+
+        // Pricing Rules
+        const newRange = {
+            start: startDate || new Date().toISOString().split('T')[0],
+            end: endDate || "2025-12-31",
+            weekdayPrice: Number(priceNightly || 0),
+            weekendPrice: Number(priceWeekend || priceNightly || 0),
+            extraBed: Number(extraBedPrice || 0),
+            notes: "السعر الأساسي"
+        };
+
+        // Construct or merge pricingRules
+        // Note: For simplicity in this admin panel, we might be overwriting or adding to ranges.
+        // Let's assume we want to ensuring 'pricingRules' object exists.
+        
+        // 4. Save to Firestore
+        setStatus('جاري حفظ البيانات في قاعدة البيانات...');
+        
+        let docRef;
+        let isNewDoc = false;
+
+        // Check if hotel exists by some ID logic or just add new if 'new_hotel'
+        if (selectedHotel === 'new_hotel') {
+            // Create new document
+            // We can search if a hotel with this name already exists to avoid duplicates
+            const q = query(collection(db, "hotels"), where("name", "==", hotelName));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                // Update existing
+                docRef = doc(db, "hotels", querySnapshot.docs[0].id);
+                // We need to fetch existing data to merge arrays if needed
+            } else {
+                // Create brand new
+                isNewDoc = true;
+                docRef = doc(collection(db, "hotels")); // Auto ID
+            }
+        } else {
+            // Known ID (fairmont, etc.) - BUT wait, do we have these IDs in Firestore?
+            // The user deleted everything. So "fairmont" ID might not exist.
+            // We should try to find by ID or create with that ID.
+            docRef = doc(db, "hotels", selectedHotel); 
+            // If we use specific IDs like 'fairmont', setDoc with merge is good.
+        }
+
+        // Prepare final payload
+        const finalData = { ...updateData };
+        
+        if (imageUrls.length > 0) {
+            // For new docs, set images. For existing, arrayUnion.
+             if (isNewDoc) {
+                 finalData.images = imageUrls;
+             } else {
+                 finalData.images = arrayUnion(...imageUrls);
+             }
         }
         
-        const prices = {
-             nightly: priceNightly,
-             weekend: priceWeekend,
-             last10: priceLast10,
-             startDate,
-             endDate,
-             extraBedPrice
-        };
-        formData.append('prices', JSON.stringify(prices));
+        // Pricing Rules Logic (Simplified for now: Just set/overwrite the ranges array with this new range for simplicity, or append?)
+        // To append properly without overwriting existing ranges, we need arrayUnion if 'ranges' was a top level array, but it's nested.
+        // For robustness, let's just set the pricingRules structure if it's a new doc, 
+        // or if updating, we might need to read first. 
+        // Let's just set it for now.
         
-        if (files) {
-             for (let i = 0; i < files.length; i++) {
-                 formData.append('files', files[i]);
+        if (isNewDoc) {
+             finalData.pricingRules = {
+                 commission: 0,
+                 ranges: [newRange]
+             };
+             if (priceLast10) {
+                 finalData.pricingRules.ranges.push({
+                    start: "2025-03-20", // Approx Ramadan last 10
+                    end: "2025-03-30",
+                    weekdayPrice: Number(priceLast10),
+                    weekendPrice: Number(priceLast10),
+                    extraBed: Number(extraBedPrice || 0),
+                    notes: "العشر الأواخر",
+                    isPackage: true,
+                    packagePrice: Number(priceLast10)
+                 });
+             }
+             // Default fields for new hotel
+             finalData.city = "مكة المكرمة";
+             finalData.stars = 5;
+             finalData.description = "وصف الفندق...";
+             finalData.location = "موقع الفندق...";
+             finalData.facilities = ["واي فاي", "موقف سيارات"];
+             finalData.lat = 21.4;
+             finalData.lng = 39.8;
+        } else {
+            // For existing, we use setDoc with merge: true
+            // But we can't easily arrayUnion a nested object field 'pricingRules.ranges'.
+            // So for this fix, let's just update the main price and add images.
+            // If the user wants to add complex ranges, they might need a better UI or we overwrite.
+            // Let's overwrite ranges if provided to ensure the latest input takes effect.
+             finalData.pricingRules = {
+                 commission: 0,
+                 ranges: [newRange]
+             };
+             if (priceLast10) {
+                 finalData.pricingRules.ranges.push({
+                    start: "2025-03-20", 
+                    end: "2025-03-30",
+                    weekdayPrice: Number(priceLast10),
+                    weekendPrice: Number(priceLast10),
+                    extraBed: Number(extraBedPrice || 0),
+                    notes: "العشر الأواخر",
+                    isPackage: true,
+                    packagePrice: Number(priceLast10)
+                 });
              }
         }
 
-        const res = await fetch('/api/admin-upload', {
-            method: 'POST',
-            body: formData
-        });
+        await setDoc(docRef, finalData, { merge: true });
         
-        const data = await res.json();
+        setStatus(`تم الحفظ بنجاح! ID: ${docRef.id}`);
+        setFiles(null);
+        // Reset form slightly?
         
-        if (data.success) {
-            setStatus(`تم العملية بنجاح! ${data.message}`);
-        } else {
-            setStatus(`فشلت العملية: ${data.error || 'خطأ غير معروف'}`);
-        }
     } catch (error: any) {
-        setStatus(`حدث خطأ في الاتصال: ${error.message}`);
+        console.error(error);
+        setStatus(`فشلت العملية: ${error.message}`);
     } finally {
         setLoading(false);
     }
@@ -102,29 +230,11 @@ export default function AdminSecretPage() {
                         type="text" 
                         value={newHotelName}
                         onChange={(e) => setNewHotelName(e.target.value)}
-                        placeholder="أدخل اسم الفندق الجديد هنا..." 
-                        required
-                        className="w-full p-3 bg-gray-900 border border-[#D4AF37] rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white" 
+                        className="w-full p-3 bg-gray-600 rounded-lg text-white focus:ring-2 focus:ring-[#D4AF37] outline-none"
+                        placeholder="مثال: فندق الصفوة"
                     />
-                    <p className="text-xs text-gray-400 mt-2">* سيتم إنشاء مجلد صور جديد تلقائياً لهذا الفندق.</p>
                 </div>
             )}
-            
-            <div className="p-4 border-2 border-dashed border-gray-600 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-colors cursor-pointer text-center relative">
-              <FaUpload className="mx-auto text-3xl mb-2 text-gray-400" />
-              <label className="block text-sm font-medium text-gray-300 cursor-pointer w-full h-full absolute inset-0 flex items-center justify-center opacity-0">
-                <input 
-                    type="file" 
-                    multiple 
-                    className="hidden" 
-                    onChange={(e) => setFiles(e.target.files)}
-                />
-              </label>
-              <span className="block text-sm font-medium text-gray-300">
-                  {files && files.length > 0 ? `${files.length} صور تم اختيارها` : "رفع الصور الجديدة (اضغط هنا)"}
-              </span>
-              <p className="text-xs text-gray-500 mt-1">PNG, JPG allowed (Auto WebP Conversion)</p>
-            </div>
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -133,8 +243,8 @@ export default function AdminSecretPage() {
                         type="number" 
                         value={priceNightly}
                         onChange={(e) => setPriceNightly(e.target.value)}
-                        placeholder="2500" 
-                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white" 
+                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
+                        placeholder="مثال: 450"
                     />
                 </div>
                 <div>
@@ -143,41 +253,41 @@ export default function AdminSecretPage() {
                         type="number" 
                         value={priceWeekend}
                         onChange={(e) => setPriceWeekend(e.target.value)}
-                        placeholder="3100" 
-                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white" 
+                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
+                        placeholder="مثال: 550"
                     />
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-300 font-tajawal">تاريخ البداية (من)</label>
+                    <label className="block text-sm font-medium mb-2 text-gray-300">تاريخ البداية (من)</label>
                     <input 
                         type="date" 
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white font-tajawal" 
+                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-300 font-tajawal">تاريخ النهاية (إلى)</label>
+                    <label className="block text-sm font-medium mb-2 text-gray-300">تاريخ النهاية (إلى)</label>
                     <input 
                         type="date" 
                         value={endDate}
                         onChange={(e) => setEndDate(e.target.value)}
-                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white font-tajawal" 
+                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
                     />
                 </div>
             </div>
 
             <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300 font-tajawal">سعر السرير الإضافي</label>
+                <label className="block text-sm font-medium mb-2 text-gray-300">سعر السرير الإضافي</label>
                 <input 
                     type="number" 
                     value={extraBedPrice}
                     onChange={(e) => setExtraBedPrice(e.target.value)}
-                    placeholder="350" 
-                    className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white font-tajawal" 
+                    className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
+                    placeholder="مثال: 150"
                 />
             </div>
 
@@ -187,23 +297,45 @@ export default function AdminSecretPage() {
                     type="number" 
                     value={priceLast10}
                     onChange={(e) => setPriceLast10(e.target.value)}
-                    placeholder="76000" 
-                    className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white" 
+                    className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
+                    placeholder="مثال: 35000"
                 />
+            </div>
+
+            <div className="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center hover:border-[#D4AF37] transition-colors">
+              <input 
+                type="file" 
+                multiple 
+                accept="image/*"
+                onChange={(e) => setFiles(e.target.files)}
+                className="hidden" 
+                id="hotel-images"
+              />
+              <label htmlFor="hotel-images" className="cursor-pointer flex flex-col items-center gap-2">
+                <FaUpload className="text-3xl text-gray-400" />
+                <span className="text-gray-300">اختر صور الفندق (يمكنك اختيار أكثر من صورة)</span>
+                {files && <span className="text-[#D4AF37] font-bold">{files.length} ملفات تم اختيارها</span>}
+              </label>
             </div>
 
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-[#D4AF37] text-black font-bold py-4 rounded-lg hover:bg-[#b5952f] transition flex items-center justify-center gap-2"
+              className={`w-full py-4 bg-[#D4AF37] text-black font-bold rounded-xl hover:bg-[#b5952f] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {loading ? 'جاري الحفظ...' : <><FaSave /> حفظ وتحديث البيانات</>}
+              {loading ? (
+                <>جاري الرفع والحفظ...</>
+              ) : (
+                <>
+                  <FaSave /> حفظ وتحديث البيانات
+                </>
+              )}
             </button>
-            
+
             {status && (
-                <div className={`mt-4 p-3 rounded-lg text-center font-bold border ${status.includes('فشلت') ? 'bg-red-900/50 border-red-700 text-red-400' : 'bg-green-900/50 border-green-700 text-green-400'}`}>
-                    {status}
-                </div>
+              <div className={`p-4 rounded-lg text-center ${status.includes('نجاح') ? 'bg-green-900/50 text-green-200' : 'bg-red-900/50 text-red-200'}`}>
+                {status}
+              </div>
             )}
           </form>
         </div>
