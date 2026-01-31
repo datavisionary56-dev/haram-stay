@@ -173,6 +173,8 @@ export default function HotelDetailsPage() {
                  setHotel(FALLBACK_HOTEL);
               } else if (typeof id === 'string' && (id.includes('fairmont') || id === "m4ygwfeu3vFBfUiQnaHi")) {
                  setHotel(FAIRMONT_FALLBACK);
+              } else if (typeof id === 'string' && (id.includes('safwa') || id.includes('alsafwa'))) {
+                 setHotel(SAFWA_FALLBACK);
               }
             }
         }
@@ -182,6 +184,8 @@ export default function HotelDetailsPage() {
         if (isMounted) {
              if (typeof id === 'string' && (id.includes('fairmont') || id === "m4ygwfeu3vFBfUiQnaHi")) {
                  setHotel(FAIRMONT_FALLBACK);
+             } else if (typeof id === 'string' && (id.includes('safwa') || id.includes('alsafwa'))) {
+                 setHotel(SAFWA_FALLBACK);
              } else {
                  setHotel(FALLBACK_HOTEL);
              }
