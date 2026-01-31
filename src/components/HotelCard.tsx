@@ -36,10 +36,15 @@ export default function HotelCard({ hotel }: HotelCardProps) {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  // Determine link destination: Gallery for Dar Al Wafideen, otherwise details page
-  const isCinematic = hotel.name?.includes("دار الوافدين");
-  // const linkHref = isCinematic ? "/gallery" : `/hotels/${hotel.id}`;
-  const linkHref = `/hotels/${hotel.id}`;
+  // Determine link destination
+  // Force Safwa to use a specific fallback ID to ensure data loading and avoid navigation issues
+  const isSafwa = hotel.name?.includes("الصفوة") || hotel.name?.includes("Safwa");
+  
+  let linkHref = hotel.id ? `/hotels/${hotel.id}` : '#';
+  
+  if (isSafwa) {
+      linkHref = `/hotels/safwa-hotel-fallback`;
+  }
 
   return (
     <motion.div
