@@ -40,72 +40,6 @@ interface HotelDetails {
   };
 }
 
-// Fallback Data for Dar Al Wafideen
-const FALLBACK_HOTEL: HotelDetails = {
-  id: "dar-al-wafideen-fallback",
-  name: "فندق دار الوافدين",
-  stars: 3,
-  location: "800 متر عن الحرم، شارع إبراهيم الخليل",
-  city: "مكة المكرمة",
-  price: 300,
-  price1to20: 300,
-  images: [
-    "/images/dar_al_wafideen/dar_al_wafideen_1.webp",
-    "/images/dar_al_wafideen/dar_al_wafideen_2.webp",
-    "/images/dar_al_wafideen/dar_al_wafideen_3.webp",
-    "/images/dar_al_wafideen/dar_al_wafideen_4.webp",
-    "/images/dar_al_wafideen/dar_al_wafideen_5.webp"
-  ],
-  description: "يتميز فندق دار الوافدين بموقعه المميز في شارع إبراهيم الخليل، على بعد 800 متر فقط من الحرم المكي الشريف. يوفر الفندق غرفاً مريحة ومجهزة بأحدث وسائل الراحة لضمان إقامة روحانية وهادئة لضيوف الرحمن.",
-  facilities: ["واي فاي مجاني", "تكييف مركزي", "قريب من الحرم", "مصاعد", "خدمة تنظيف يومية", "استقبال 24 ساعة"],
-  lat: 21.413333,
-  lng: 39.893333,
-  pricingRules: {
-    commission: 30,
-    ranges: []
-  }
-};
-
-const FAIRMONT_FALLBACK: HotelDetails = {
-  id: "fairmont-makkah-fallback",
-  name: "فندق فيرمونت مكة",
-  stars: 5,
-  location: "وقف الملك عبدالعزيز، الحرم",
-  city: "مكة المكرمة",
-  price: 2500,
-  price1to20: 2500,
-  images: [
-    "/images/fairmont/fairmont_1.png",
-    "/images/fairmont/fairmont_2.png",
-    "/images/fairmont/fairmont_3.png",
-    "/images/fairmont/fairmont_4.png"
-  ],
-  description: "ارتقِ بتجربتك في قلب مكة مع فندق فيرمونت مكة ببرج الساعة 🕋. استمتع بإطلالات بانورامية مباشرة على الكعبة المشرفة، وخدمة استثنائية تمزج بين الفخامة والروحانية. نوفر لك غرفاً وأجنحة ملكية، و8 وجهات لتناول الطعام، وأسرع وصول للحرم الشريف.",
-  facilities: ["إطلالة مباشرة", "واي فاي مجاني", "مطاعم فاخرة", "نادي صحي", "خدمة الغرف 24/7"],
-  lat: 21.4188,
-  lng: 39.8264,
-  pricingRules: {
-    commission: 0,
-    ranges: [
-        {
-            start: "2024-02-18",
-            end: "2024-03-19",
-            weekdayPrice: 2500,
-            weekendPrice: 3100,
-            extraBed: 350,
-            notes: "🏨 الفندق: فيرمونت مكة"
-        },
-        {
-            start: "2024-03-31",
-            end: "2024-04-09",
-            isPackage: true,
-            packagePrice: 76000,
-            notes: "🕋 باقة العشر الأواخر"
-        }
-    ]
-  }
-};
-
 export default function HotelDetailsPage() {
   const { id } = useParams();
   const [hotel, setHotel] = useState<HotelDetails | null>(null);
@@ -125,20 +59,6 @@ export default function HotelDetailsPage() {
     let isMounted = true;
 
     const fetchHotel = async () => {
-      // Check for fallback ID or if we should use fallback
-      if (id === "dar-al-wafideen-fallback") {
-        if (isMounted) {
-            setHotel(FALLBACK_HOTEL);
-            setLoading(false);
-        }
-        return;
-      }
-      
-      // Fallback for Fairmont if ID matches or specifically requested
-      if (id === "fairmont-makkah-fallback" || id === "m4ygwfeu3vFBfUiQnaHi") {
-          // Try fetching first, but if it fails or has no images, use fallback
-      }
-
       if (!id) return;
 
       try {
@@ -148,60 +68,14 @@ export default function HotelDetailsPage() {
         if (isMounted) {
             if (docSnap.exists()) {
               const data = docSnap.data();
-              // Force location text for Dar Al Wafideen
-              if ((data.name && data.name.includes('دار الوافدين')) || (typeof id === 'string' && id.includes('dar'))) {
-                 if (!data.location || !data.location.includes('إبراهيم الخليل')) {
-                    data.location = "800 متر عن الحرم، شارع إبراهيم الخليل";
-                 }
-              }
-              // Force Fairmont Data if needed
-              if (data.name && data.name.includes('فيرمونت')) {
-                  // Use remote images if local ones are missing or if we want to force CDN
-                  if (!data.images || data.images.length === 0 || data.images.some((img: string) => img.includes('localhost') || !img.startsWith('http'))) {
-                       data.images = FAIRMONT_FALLBACK.images;
-                  }
-                  if (!data.price || data.price < 2000) {
-                      data.price = 2500;
-                  }
-              }
-              
-              // Force Safwa Data if needed
-              if (data.name && (data.name.includes('الصفوة') || data.name.includes('Safwa'))) {
-                  if (!data.images || data.images.length === 0) {
-                      data.images = SAFWA_FALLBACK.images;
-                  }
-                  if (!data.description) {
-                      data.description = SAFWA_FALLBACK.description;
-                  }
-                  if (!data.location) data.location = SAFWA_FALLBACK.location;
-                  if (!data.price) data.price = SAFWA_FALLBACK.price;
-              }
-
               setHotel({ id: docSnap.id, ...data } as HotelDetails);
             } else {
               console.error("Hotel not found in Firestore");
-              // Fallback if not found and looks like Dar Al Wafideen
-              if (typeof id === 'string' && id.includes('dar')) {
-                 setHotel(FALLBACK_HOTEL);
-              } else if (typeof id === 'string' && (id.includes('fairmont') || id === "m4ygwfeu3vFBfUiQnaHi")) {
-                 setHotel(FAIRMONT_FALLBACK);
-              } else if (typeof id === 'string' && (id.includes('safwa') || id.includes('alsafwa'))) {
-                 setHotel(SAFWA_FALLBACK);
-              }
+              setHotel(null);
             }
         }
       } catch (error) {
         console.error("Error fetching hotel:", error);
-        // Fallback on error
-        if (isMounted) {
-             if (typeof id === 'string' && (id.includes('fairmont') || id === "m4ygwfeu3vFBfUiQnaHi")) {
-                 setHotel(FAIRMONT_FALLBACK);
-             } else if (typeof id === 'string' && (id.includes('safwa') || id.includes('alsafwa'))) {
-                 setHotel(SAFWA_FALLBACK);
-             } else {
-                 setHotel(FALLBACK_HOTEL);
-             }
-        }
       } finally {
         if (isMounted) setLoading(false);
       }
