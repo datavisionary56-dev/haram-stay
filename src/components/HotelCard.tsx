@@ -50,8 +50,8 @@ export default function HotelCard({ hotel }: HotelCardProps) {
   }
 
   // WhatsApp Message
-  const whatsappMessage = `السلام عليكم، أنا مهتم بحجز ${hotel.name || "فندق"} المعروض في موقع HaramStay.`;
-  const whatsappLink = `https://wa.me/966548690356?text=${encodeURIComponent(whatsappMessage)}`;
+  // const whatsappMessage = `السلام عليكم، أنا مهتم بحجز ${hotel.name || "فندق"} المعروض في موقع HaramStay.`;
+  // const whatsappLink = `https://wa.me/966548690356?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <motion.div
@@ -118,6 +118,25 @@ export default function HotelCard({ hotel }: HotelCardProps) {
                     >
                       →
                     </button>
+
+                    <div className="absolute bottom-4 left-0 right-0 z-20 flex gap-2 justify-center">
+                        {images.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setCurrentIndex(index);
+                                }}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${
+                                    index === currentIndex 
+                                        ? "w-8 bg-[#D4AF37]" 
+                                        : "w-2 bg-white/40 hover:bg-white/60"
+                                }`}
+                                aria-label={`Go to slide ${index + 1}`}
+                            />
+                        ))}
+                    </div>
                 </>
             )}
 
@@ -145,20 +164,31 @@ export default function HotelCard({ hotel }: HotelCardProps) {
             )}
       </div>
 
-      {/* Bottom Section: Details & Action (40% height) */}
-      <div className="flex flex-col justify-between p-5 h-[40%] bg-[#1a1a1a] text-right relative overflow-hidden">
-          {/* Golden Top Border for content */}
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-50"></div>
-
-          <Link href={linkHref} className="block relative z-10">
-            <div className="flex justify-between items-start">
-                <h3 className="text-xl font-bold text-white mb-1 line-clamp-1 hover:text-[#D4AF37] transition-colors">{hotel.name || "فندق مميز"}</h3>
-                <div className="flex items-center gap-0.5 text-[#D4AF37] text-xs pt-1">
-                    {[...Array(5)].map((_, i) => (
-                        <FaStar key={i} className={i < (hotel.stars || 0) ? "text-[#D4AF37]" : "text-zinc-700"} />
-                    ))}
-                </div>
+                {/* Content Section */}
+      <div className="flex-1 p-5 flex flex-col relative bg-gradient-to-b from-[#1a1a1a] to-[#0f0f0f]">
+        
+        <div className="flex justify-between items-start mb-2">
+            <div>
+                <h3 className="text-xl font-bold text-white group-hover:text-[#D4AF37] transition-colors mb-1 line-clamp-1">
+                {hotel.name || "فندق مكة المكرمة"}
+                </h3>
+                {hotel.stars && (
+                    <div className="flex text-[#D4AF37] text-sm">
+                        {[...Array(hotel.stars)].map((_, i) => (
+                            <FaStar key={i} />
+                        ))}
+                    </div>
+                )}
             </div>
+            
+            {/* Price Badge */}
+            {(hotel.price || 0) > 0 && (
+                <div className="bg-[#D4AF37]/10 border border-[#D4AF37]/30 px-3 py-1 rounded-lg">
+                    <span className="text-[#D4AF37] font-bold text-lg">{hotel.price}</span>
+                    <span className="text-[10px] text-gray-400 block -mt-1 text-center">ريال/ليلة</span>
+                </div>
+            )}
+        </div>
 
             {/* Hotel Description Snippet */}
             {hotel.description && (
@@ -191,20 +221,23 @@ export default function HotelCard({ hotel }: HotelCardProps) {
               </Link>
               
               <button 
-                onClick={() => setIsModalOpen(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsModalOpen(true);
+                }}
                 className="bg-[#25D366] hover:bg-[#128C7E] text-white flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg hover:shadow-[#25D366]/20"
               >
                 <FaWhatsapp className="text-lg" />
                 <span>حجز واتساب</span>
               </button>
           </div>
-      </div>
 
-      <BookingModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        hotelName={hotel.name || "فندق"} 
-      />
+          <BookingModal 
+            isOpen={isModalOpen} 
+            onClose={() => setIsModalOpen(false)} 
+            hotelName={hotel.name || "فندق"} 
+          />
+      </div>
     </motion.div>
   );
 }
