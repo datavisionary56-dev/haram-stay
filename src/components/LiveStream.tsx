@@ -27,7 +27,7 @@ export default function LiveStream() {
             <iframe 
                 width="100%" 
                 height="100%" 
-                src="https://www.youtube.com/embed/live_stream?channel=UCos52azQNBgW63_9uDJoPDA&autoplay=1&mute=1" 
+                src="https://www.youtube.com/embed/M7hlkC_a9wI?autoplay=1&mute=1" 
                 title="Makkah Live"  
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowFullScreen
