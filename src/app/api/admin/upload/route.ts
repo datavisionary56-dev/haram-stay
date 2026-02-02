@@ -16,13 +16,13 @@ const serviceAccountPath = path.join(process.cwd(), 'service-account.json');
 let storage: Storage | null = null;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let bucket: any = null;
-const bucketName = 'haram-stay-free.firebasestorage.app';
+const bucketName = 'sacreddeals.firebasestorage.app';
 
 if (fs.existsSync(serviceAccountPath)) {
     try {
         storage = new Storage({
             keyFilename: serviceAccountPath,
-            projectId: 'haram-stay-free',
+            projectId: 'sacreddeals',
         });
         bucket = storage.bucket(bucketName);
     } catch (e) {
