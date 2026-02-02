@@ -4,17 +4,22 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --no-lint",
+    "build": "next build",
     "start": "next start",
+    "set-cors": "node fix-cors.js",
     "lint": "eslint"
   },
   "dependencies": {
+    "@google-cloud/storage": "^7.18.0",
+    "@opentelemetry/api": "^1.9.0",
     "@types/leaflet": "^1.9.21",
     "@types/mapbox-gl": "^3.4.1",
     "axios": "^1.13.2",
     "cheerio": "^1.1.2",
+    "cloudinary": "^2.9.0",
     "date-fns": "^4.1.0",
     "firebase": "^12.8.0",
+    "firebase-admin": "^13.6.0",
     "framer-motion": "^12.27.0",
     "leaflet": "^1.9.4",
     "next": "16.1.3",

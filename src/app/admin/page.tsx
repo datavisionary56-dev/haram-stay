@@ -5,6 +5,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function AdminPage() {
   const [hotelUrl, setHotelUrl] = useState("");
+  const [distance, setDistance] = useState("");
   const [loading, setLoading] = useState(false);
 
   // الوظيفة الأساسية للإضافة
@@ -41,11 +42,13 @@ export default function AdminPage() {
           description: hotelData.description || "",
           facilities: hotelData.facilities || [],
           originalUrl: hotelData.originalUrl || "",
+          distanceToHaram: distance ? Number(distance) : 0,
           createdAt: serverTimestamp(),
         });
 
         alert("تم إضافة الفندق بنجاح وصوره وإحداثياته جاهزة!");
         setHotelUrl("");
+        setDistance("");
       } else {
         alert("فشل الجلب: " + result.error);
       }
@@ -67,6 +70,14 @@ export default function AdminPage() {
           value={hotelUrl}
           onChange={(e) => setHotelUrl(e.target.value)}
           placeholder="أدخل رابط الفندق من بوكينج هنا..."
+          className="w-full p-4 bg-black border border-zinc-700 rounded-lg text-white mb-4"
+        />
+
+        <input 
+          type="number" 
+          value={distance}
+          onChange={(e) => setDistance(e.target.value)}
+          placeholder="بعد الفندق عن الحرم (بالمتر)..."
           className="w-full p-4 bg-black border border-zinc-700 rounded-lg text-white mb-4"
         />
         

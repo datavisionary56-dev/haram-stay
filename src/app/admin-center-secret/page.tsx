@@ -1,16 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
-import { FaUpload, FaSave, FaArrowRight, FaExclamationTriangle, FaCheckCircle, FaTerminal } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaUpload, FaSave, FaArrowRight, FaExclamationTriangle, FaCheckCircle, FaTerminal, FaWifi } from 'react-icons/fa';
 import Link from 'next/link';
-import { db, storage } from '@/lib/firebase';
+import { db, storage, auth } from '@/lib/firebase';
 import { collection, addDoc, updateDoc, doc, setDoc, getDocs, query, where, arrayUnion } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { signInAnonymously } from 'firebase/auth';
 
 export default function AdminSecretPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
   const [logs, setLogs] = useState<string[]>([]);
+  const [isConnected, setIsConnected] = useState<boolean | null>(null);
   const [selectedHotel, setSelectedHotel] = useState('fairmont');
   const [newHotelName, setNewHotelName] = useState('');
   
@@ -24,6 +26,7 @@ export default function AdminSecretPage() {
   const [endDate, setEndDate] = useState('');
   const [extraBedPrice, setExtraBedPrice] = useState('');
   const [files, setFiles] = useState<FileList | null>(null);
+  const [projectId, setProjectId] = useState('');
 
   const addLog = (message: string, type: 'info' | 'error' | 'success' = 'info') => {
     const timestamp = new Date().toLocaleTimeString();
@@ -31,13 +34,70 @@ export default function AdminSecretPage() {
     setLogs(prev => [`[${timestamp}] ${prefix} ${message}`, ...prev]);
   };
 
-  const handleUpload = async (e: React.FormEvent) => {
+  useEffect(() => {
+    // Show which project we are connected to
+    setProjectId(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'unknown');
+    
+    addLog(`Environment Project ID: ${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}`, 'info');
+
+    addLog("جاري محاولة الاتصال بـ Firebase...", 'info');
+    signInAnonymously(auth)
+      .then((userCred) => {
+        addLog(`✅ تم الاتصال بنجاح! (User ID: ${userCred.user.uid})`, 'success');
+        setIsConnected(true);
+      })
+      .catch((error) => {
+        console.error("Auth Error:", error);
+        addLog(`❌ فشل الاتصال: ${error.message}`, 'error');
+        addLog(`⚠️ تأكد من تفعيل 'Anonymous' في Firebase Authentication > Sign-in method`, 'error');
+        setIsConnected(false);
+      });
+  }, []);
+
+  const testConnection = async () => {
+      try {
+          addLog("جاري اختبار الكتابة في قاعدة البيانات...", 'info');
+          const testRef = doc(collection(db, "system_logs"));
+          await setDoc(testRef, { 
+              message: "Test Connection", 
+              timestamp: new Date().toISOString(),
+              uid: auth.currentUser?.uid || 'unknown'
+          });
+          addLog("✅ نجح اختبار الكتابة في Firestore!", 'success');
+          alert("الاتصال يعمل بشكل ممتاز! يمكنك البدء في رفع الفنادق.");
+      } catch (error: any) {
+          console.error("Test Error:", error);
+          addLog(`❌ فشل اختبار الكتابة: ${error.message}`, 'error');
+          if (error.code === 'permission-denied') {
+              addLog(`⚠️ خطأ في الصلاحيات! يجب تعديل Firestore Rules إلى: allow read, write: if true;`, 'error');
+          }
+          alert(`فشل الاتصال: ${error.message}`);
+      }
+  };
+
+    const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setStatus('جاري المعالجة...');
     setLogs([]); // Clear previous logs
     addLog("بدء عملية الرفع والحفظ...", 'info');
     
+    // Auth Check
+    let currentUser = auth.currentUser;
+    if (!currentUser) {
+        try {
+            addLog("⚠️ لم يتم العثور على جلسة نشطة، جاري تسجيل الدخول...", 'info');
+            const userCred = await signInAnonymously(auth);
+            currentUser = userCred.user;
+            addLog(`✅ تم تسجيل الدخول بنجاح (UID: ${currentUser.uid})`, 'success');
+        } catch (authError: any) {
+            console.error("Auth failed:", authError);
+            addLog(`⚠️ فشل تسجيل الدخول المجهول: ${authError.message}`, 'error');
+            addLog(`⚠️ جاري محاولة الحفظ بدون تسجيل دخول (يعتمد على قواعد الأمان)...`, 'info');
+            // Do not return here - let it proceed!
+        }
+    }
+
     try {
         let hotelId = selectedHotel;
         let hotelName = "";
@@ -47,8 +107,12 @@ export default function AdminSecretPage() {
         if (selectedHotel === 'new_hotel') {
             if (!newHotelName) throw new Error("اسم الفندق الجديد مطلوب");
             hotelName = newHotelName;
-            folderName = newHotelName.replace(/\s+/g, '_').toLowerCase().replace(/[^a-z0-9_]/g, '');
-            if (!folderName) folderName = "new_hotel_" + Date.now();
+            // Sanitize folder name: remove special chars. If result is empty or just underscores (common for Arabic names), use timestamp.
+            let safeName = newHotelName.replace(/\s+/g, '_').toLowerCase().replace(/[^a-z0-9_]/g, '');
+            if (!safeName || /^_+$/.test(safeName)) {
+                safeName = "hotel_" + Date.now();
+            }
+            folderName = safeName;
         } else {
             folderName = selectedHotel;
             if (selectedHotel === 'fairmont') hotelName = "فندق فيرمونت مكة";
@@ -57,43 +121,53 @@ export default function AdminSecretPage() {
         }
 
         addLog(`تم تحديد الفندق: ${hotelName} (المجلد: ${folderName})`, 'info');
+        console.log(`Target Collection: hotels, Folder: ${folderName}`);
 
-        // 2. Upload Images to Firebase Storage
-        const imageUrls: string[] = [];
-        if (files && files.length > 0) {
-            addLog(`جاري تجهيز ${files.length} ملفات للرفع...`, 'info');
-            
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                setStatus(`جاري رفع الصورة (${i + 1} من ${files.length}): ${file.name}...`);
+        // 2. Upload Images to Firebase Storage (Server-Side Bypass)
+        const uploadPromises = Array.from(files || []).map(async (file, i) => {
+            try {
+                addLog(`جاري رفع ${file.name} عبر السيرفر (تجاوز CORS)...`, 'info');
                 
-                try {
-                    const storagePath = `hotels/${folderName}/${Date.now()}_${file.name}`;
-                    const storageRef = ref(storage, storagePath);
-                    addLog(`جاري رفع ${file.name} إلى ${storagePath}...`, 'info');
-                    
-                    const snapshot = await uploadBytes(storageRef, file);
-                    addLog(`تم رفع ${file.name} بنجاح!`, 'success');
-                    
-                    const url = await getDownloadURL(snapshot.ref);
-                    imageUrls.push(url);
-                    addLog(`تم الحصول على رابط الصورة: ${url.substring(0, 30)}...`, 'success');
-                    
-                } catch (uploadError: any) {
-                    console.error(`Error uploading ${file.name}:`, uploadError);
-                    addLog(`فشل رفع ${file.name}: ${uploadError.message} (Code: ${uploadError.code})`, 'error');
-                    
-                    if (uploadError.code === 'storage/unauthorized') {
-                         addLog(`⚠️ خطأ في الصلاحيات! تأكد من إعدادات Firebase Storage Rules لتسمح بالكتابة (allow write: if true;)`, 'error');
-                    }
-                    
-                    setStatus(`فشل رفع الصورة ${file.name}: ${uploadError.message}`);
-                    throw new Error(`فشل رفع الصورة ${file.name}: ${uploadError.message}`);
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('folder', `hotels/${folderName}`);
+
+                const response = await fetch('/api/admin/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Upload failed');
                 }
+
+                const data = await response.json();
+                
+                console.log(`Upload Success: ${file.name} -> ${data.url}`);
+                addLog(`✅ تم رفع ${file.name}`, 'success');
+                return { status: 'fulfilled', url: data.url };
+            } catch (error: any) {
+                console.error(`Upload Failed: ${file.name}`, error);
+                addLog(`❌ فشل رفع ${file.name}: ${error.message}`, 'error');
+                return { status: 'rejected', reason: error };
             }
-        } else {
-             addLog("لا توجد صور جديدة للرفع، سيتم تحديث البيانات فقط.", 'info');
+        });
+
+        setStatus(`جاري رفع ${files?.length || 0} صور...`);
+        const uploadResults = await Promise.all(uploadPromises);
+        
+        const imageUrls = uploadResults
+            .filter((result): result is { status: 'fulfilled', url: string } => result.status === 'fulfilled')
+            .map(result => result.url);
+
+        if (imageUrls.length === 0 && files && files.length > 0) {
+            addLog("⚠️ فشل رفع جميع الصور! سيتم حفظ بيانات الفندق النصية فقط (Fallback Mode).", 'error');
+            addLog("⚠️ السبب المحتمل: خدمة التخزين (Storage) غير مفعلة في فيربيز.", 'error');
+            addLog("💡 الحل: اذهب إلى Firebase Console -> Storage واضغط 'Get Started' لتفعيله.", 'info');
         }
+
+        console.log("All Uploads Finished. Successful URLs:", imageUrls);
 
         // 3. Prepare Data for Firestore
         const updateData: any = {
@@ -209,10 +283,21 @@ export default function AdminSecretPage() {
     <div className="min-h-screen bg-gray-900 text-white font-sans" dir="rtl">
       <div className="container mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-[#D4AF37]">Admin Center</h1>
-          <Link href="/" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-            العودة للرئيسية <FaArrowRight />
-          </Link>
+          <div>
+            <h1 className="text-3xl font-bold text-[#D4AF37]">Admin Center</h1>
+            <p className="text-xs text-gray-500 mt-1">Project: {projectId}</p>
+          </div>
+          <div className="flex gap-4">
+            <button 
+                onClick={testConnection}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all ${isConnected ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+            >
+                <FaWifi /> {isConnected === null ? 'جاري الاتصال...' : isConnected ? 'متصل (اضغط للاختبار)' : 'غير متصل'}
+            </button>
+            <Link href="/" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                العودة للرئيسية <FaArrowRight />
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

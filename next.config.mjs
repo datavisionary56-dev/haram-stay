@@ -14,12 +14,32 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 't-cf.bstatic.com',
+        hostname: '*.bstatic.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.booking.com',
         pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'dynamic-media-cdn.tripadvisor.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
         pathname: '/**',
       },
     ],

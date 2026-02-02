@@ -33,6 +33,13 @@ export default function Navbar() {
           </Link>
 
           <Link 
+            href="/blog" 
+            className={`transition-colors duration-300 ${pathname.startsWith("/blog") ? "text-[#D4AF37]" : "text-zinc-400 hover:text-white"}`}
+          >
+            المدونة
+          </Link>
+
+          <Link 
             href="/contact" 
             className={`transition-colors duration-300 ${pathname === "/contact" ? "text-[#D4AF37]" : "text-zinc-400 hover:text-white"}`}
           >

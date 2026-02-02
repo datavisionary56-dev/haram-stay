@@ -27,8 +27,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HaramStay | فخامة الإقامة في مكة",
-  description: "بوابتك للراحة الروحية في مكة المكرمة والمدينة المنورة",
+  title: "HaramStay | عروض فنادق مكة المكرمة في رمضان 2025",
+  description: "اكتشف أفضل عروض فنادق مكة المكرمة لرمضان 2025. حجوزات مؤكدة وأسعار تنافسية بالقرب من الحرم المكي الشريف.",
 };
 
 export default function RootLayout({

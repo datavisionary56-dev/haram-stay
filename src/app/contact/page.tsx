@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
+import { FaTwitter, FaInstagram, FaSnapchat, FaWhatsapp } from 'react-icons/fa';
 
 export default function ContactPage() {
   return (
@@ -36,13 +37,22 @@ export default function ContactPage() {
 
             <div>
               <h3 className="text-[#D4AF37] text-xl font-bold mb-4">اتصل بنا</h3>
-              <p className="text-white text-2xl font-black font-sans">+966 50 000 0000</p>
-              <p className="text-zinc-500 mt-2">متاحون على واتساب أيضاً</p>
+              <a href="tel:+966548690356" className="text-white text-2xl font-black font-sans hover:text-[#D4AF37] transition-colors block mb-2" dir="ltr">
+                +966 54 869 0356
+              </a>
+              <a 
+                href="https://wa.me/966548690356" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-bold"
+              >
+                تواصل عبر واتساب
+              </a>
             </div>
 
             <div>
               <h3 className="text-[#D4AF37] text-xl font-bold mb-4">البريد الإلكتروني</h3>
-              <p className="text-zinc-400 text-lg">concierge@haramstay.com</p>
+              <p className="text-zinc-400 text-lg">info@haramstay.com</p>
             </div>
 
             {/* أيقونات تواصل اجتماعي بسيطة */}
