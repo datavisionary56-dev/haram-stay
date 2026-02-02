@@ -33,7 +33,7 @@ export default function AboutPage() {
           <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-8 rounded-3xl shadow-2xl hover:bg-white/10 transition-colors">
             <h2 className="text-3xl font-bold text-[#D4AF37] mb-4">رسالتنا</h2>
             <p className="text-gray-300 leading-loose text-lg">
-              في "HaramStay"، نؤمن بأن رحلة العمرة والحج تبدأ براحة البال. رسالتنا هي تبسيط عملية حجز الفنادق في مكة المكرمة والمدينة المنورة، مع توفير خيارات تناسب جميع الميزانيات، من الفنادق الاقتصادية إلى الأجنحة الفاخرة المطلة على الكعبة المشرفة.
+              في &quot;HaramStay&quot;، نؤمن بأن رحلة العمرة والحج تبدأ براحة البال. رسالتنا هي تبسيط عملية حجز الفنادق في مكة المكرمة والمدينة المنورة، مع توفير خيارات تناسب جميع الميزانيات، من الفنادق الاقتصادية إلى الأجنحة الفاخرة المطلة على الكعبة المشرفة.
             </p>
           </div>
 

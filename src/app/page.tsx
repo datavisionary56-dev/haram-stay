@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import dynamic from 'next/dynamic';
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FaMosque, FaMoon } from "react-icons/fa";
 import HotelsGrid from "@/components/HotelsGrid"; 
 import Footer from "@/components/Footer";
@@ -15,7 +14,9 @@ export default function HomePage() {
   const [showAdmin, setShowAdmin] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Small timeout to avoid "setState in effect" warning and ensure hydration matches
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!mounted) return null;

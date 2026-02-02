@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+import puppeteer, { Page } from 'puppeteer';
 
 export async function scrapeGoogleMapsImages(url: string, hotelName?: string): Promise<string[]> {
   let browser;
@@ -56,7 +56,7 @@ export async function scrapeGoogleMapsImages(url: string, hotelName?: string): P
   }
 }
 
-async function extractImages(page: any): Promise<string[]> {
+async function extractImages(page: Page): Promise<string[]> {
     return await page.evaluate(() => {
       const images: string[] = [];
       

@@ -46,8 +46,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, message: `Created new hotel: ${newDoc.id}`, id: newDoc.id });
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error("Update failed:", error);
-    return NextResponse.json({ success: false, error: error.message });
+    return NextResponse.json({ success: false, error: message });
   }
 }

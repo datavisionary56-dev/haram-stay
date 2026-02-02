@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Storage } from '@google-cloud/storage';
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import path from 'path';
 import fs from 'fs';
 
@@ -14,6 +14,7 @@ cloudinary.config({
 // Initialize Storage with the service account (Only works if file exists and billing is enabled)
 const serviceAccountPath = path.join(process.cwd(), 'service-account.json');
 let storage: Storage | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let bucket: any = null;
 const bucketName = 'haram-stay-free.firebasestorage.app';
 
@@ -46,22 +47,21 @@ export async function POST(req: NextRequest) {
     if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
         console.log(`Attempting Cloudinary upload for: ${fileName}`);
         try {
-            const result = await new Promise((resolve, reject) => {
+            const result = await new Promise<UploadApiResponse>((resolve, reject) => {
                 const uploadStream = cloudinary.uploader.upload_stream(
                     { folder: 'haram-stay-hotels', public_id: fileName.replace(/\.[^/.]+$/, "") },
                     (error, result) => {
                         if (error) reject(error);
-                        else resolve(result);
+                        else resolve(result!);
                     }
                 );
                 uploadStream.end(buffer);
             });
             
-            // @ts-ignore
             const publicUrl = result.secure_url;
             console.log(`Cloudinary upload successful: ${publicUrl}`);
             return NextResponse.json({ url: publicUrl });
-        } catch (cloudinaryError: any) {
+        } catch (cloudinaryError: unknown) {
              console.error('Cloudinary upload failed:', cloudinaryError);
              // Fall through to next method
         }
@@ -82,8 +82,9 @@ export async function POST(req: NextRequest) {
             console.log(`Firebase upload successful: ${publicUrl}`);
             return NextResponse.json({ url: publicUrl });
     
-        } catch (firebaseError: any) {
-            console.error('Firebase upload failed:', firebaseError.message);
+        } catch (firebaseError: unknown) {
+            const message = firebaseError instanceof Error ? firebaseError.message : String(firebaseError);
+            console.error('Firebase upload failed:', message);
             // Fall through to next method
         }
     }
@@ -108,10 +109,11 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({ url: localUrl });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error('Upload processing error:', error);
     return NextResponse.json(
-      { error: `Upload failed: ${error.message}` },
+      { error: `Upload failed: ${message}` },
       { status: 500 }
     );
   }

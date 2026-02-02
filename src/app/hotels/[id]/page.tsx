@@ -6,10 +6,9 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Image from "next/image";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
-import { differenceInDays, addDays, isWithinInterval, parseISO, startOfDay } from "date-fns";
-import { motion, AnimatePresence } from "framer-motion";
+import { differenceInDays, parseISO, startOfDay } from "date-fns";
+import { motion } from "framer-motion";
 import BookingModal from "@/components/BookingModal";
 
 // تعريف واجهة البيانات
@@ -117,8 +116,8 @@ export default function HotelDetailsPage() {
     }
 
     let total = 0;
-    let breakdown: string[] = [];
-    let note = "";
+    const breakdown: string[] = [];
+    const note = "";
     const commission = hotel.pricingRules?.commission || 0;
     const basePrice = hotel.price || 300;
 

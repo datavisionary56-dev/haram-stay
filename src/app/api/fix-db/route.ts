@@ -232,14 +232,13 @@ export async function GET(request: Request) {
       }
     ];
 
-    const targetIds = targetHotels.map(h => h.id);
     const batch = writeBatch(db);
     let operationCount = 0;
 
     // 3. Force Clean (Delete All or Duplicates)
     if (type === "force_clean" || type === "delete_all") {
       hotels.forEach(({ docId, data }) => {
-        const hData = data as any;
+        const hData = data as { id?: string; name?: string };
         
         // For "delete_all", we delete EVERYTHING.
         // For "force_clean", we delete non-targets.
@@ -270,7 +269,7 @@ export async function GET(request: Request) {
     if (type === "restore_swiss" || type === "fix_all") {
         for (const hotel of targetHotels) {
           // Generate ID if missing
-          const hotelId = hotel.id || (hotel as any).nameEn?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || hotel.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || `hotel-${Math.random().toString(36).substr(2, 9)}`;
+          const hotelId = hotel.id || (hotel as { nameEn?: string }).nameEn?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || hotel.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || `hotel-${Math.random().toString(36).substr(2, 9)}`;
 
           const docRef = doc(db, "hotels", hotelId);
           
@@ -320,8 +319,9 @@ export async function GET(request: Request) {
         'Cache-Control': 'no-store, max-age=0'
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Fix DB Error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }

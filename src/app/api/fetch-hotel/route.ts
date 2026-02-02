@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       headers
     });
 
-    const hotelData = searchRes.data.find((item: any) => item.dest_type === 'hotel');
+    const hotelData = searchRes.data.find((item: { dest_type: string; dest_id: string }) => item.dest_type === 'hotel');
     if (!hotelData) throw new Error("لم يتم العثور على المعرف الرقمي");
 
     const hotelId = hotelData.dest_id;
@@ -62,12 +62,12 @@ export async function POST(req: Request) {
     }
 
     // استخراج المرافق
-    const facilities = facilitiesRes.data?.map((f: any) => f.facility_name) || [];
+    const facilities = facilitiesRes.data?.map((f: { facility_name: string }) => f.facility_name) || [];
 
     // استخراج الوصف (إذا لم يتوفر مباشرة، نستخدم وصفاً عاماً بناءً على البيانات)
     // ملاحظة: endpoint /data لا يعيد الوصف دائماً بشكل مباشر في بعض الحالات، 
     // ولكن سنحاول استخراجه أو بناء وصف جذاب.
-    const description = finalData.description_translations?.find((d: any) => d.languagecode === 'ar')?.description 
+    const description = finalData.description_translations?.find((d: { languagecode: string; description: string }) => d.languagecode === 'ar')?.description 
       || `استمتع بإقامة فاخرة في ${finalData.hotel_name}، الذي يتميز بموقعه الاستراتيجي في ${finalData.city}. يوفر الفندق خدمات مميزة لضيوف الرحمن.`;
 
     return NextResponse.json({
@@ -87,9 +87,10 @@ export async function POST(req: Request) {
       }
     });
 
-  } catch (error: any) {
-    console.error("❌ فشل الجلب:", error.message);
-    return NextResponse.json({ success: false, error: error.message || "خطأ في الجلب" });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("❌ فشل الجلب:", message);
+    return NextResponse.json({ success: false, error: message || "خطأ في الجلب" });
   }
 }
 
@@ -131,8 +132,9 @@ async function handleGoogleMaps(url: string) {
                 source: 'google_maps_scraper'
             }
         });
-    } catch (e: any) {
-        return NextResponse.json({ success: false, error: "فشل الكشط: " + e.message });
+    } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return NextResponse.json({ success: false, error: "فشل الكشط: " + message });
     }
   }
 
@@ -181,7 +183,7 @@ async function handleGoogleMaps(url: string) {
     const details = detailsRes.data.result;
     let images: string[] = [];
     if (details.photos) {
-      images = details.photos.map((photo: any) => 
+      images = details.photos.map((photo: { photo_reference: string }) => 
         `https://maps.googleapis.com/maps/api/place/photo?maxwidth=1280&photo_reference=${photo.photo_reference}&key=${apiKey}`
       );
     }
@@ -203,8 +205,9 @@ async function handleGoogleMaps(url: string) {
       }
     });
 
-  } catch (error: any) {
-    console.error("❌ Google Maps Error:", error.message);
-    return NextResponse.json({ success: false, error: "فشل جلب البيانات من جوجل: " + error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("❌ Google Maps Error:", message);
+    return NextResponse.json({ success: false, error: "فشل جلب البيانات من جوجل: " + message });
   }
 }

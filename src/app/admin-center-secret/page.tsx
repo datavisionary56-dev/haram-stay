@@ -65,13 +65,14 @@ export default function AdminSecretPage() {
           });
           addLog("✅ نجح اختبار الكتابة في Firestore!", 'success');
           alert("الاتصال يعمل بشكل ممتاز! يمكنك البدء في رفع الفنادق.");
-      } catch (error: any) {
+      } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : String(error);
           console.error("Test Error:", error);
-          addLog(`❌ فشل اختبار الكتابة: ${error.message}`, 'error');
-          if (error.code === 'permission-denied') {
+          addLog(`❌ فشل اختبار الكتابة: ${message}`, 'error');
+          if (error instanceof Error && (error as { code?: string }).code === 'permission-denied') {
               addLog(`⚠️ خطأ في الصلاحيات! يجب تعديل Firestore Rules إلى: allow read, write: if true;`, 'error');
           }
-          alert(`فشل الاتصال: ${error.message}`);
+          alert(`فشل الاتصال: ${message}`);
       }
   };
 
@@ -90,16 +91,17 @@ export default function AdminSecretPage() {
             const userCred = await signInAnonymously(auth);
             currentUser = userCred.user;
             addLog(`✅ تم تسجيل الدخول بنجاح (UID: ${currentUser.uid})`, 'success');
-        } catch (authError: any) {
+        } catch (authError: unknown) {
+            const message = authError instanceof Error ? authError.message : String(authError);
             console.error("Auth failed:", authError);
-            addLog(`⚠️ فشل تسجيل الدخول المجهول: ${authError.message}`, 'error');
+            addLog(`⚠️ فشل تسجيل الدخول المجهول: ${message}`, 'error');
             addLog(`⚠️ جاري محاولة الحفظ بدون تسجيل دخول (يعتمد على قواعد الأمان)...`, 'info');
             // Do not return here - let it proceed!
         }
     }
 
     try {
-        let hotelId = selectedHotel;
+        const hotelId = selectedHotel;
         let hotelName = "";
         let folderName = "";
 
@@ -124,7 +126,7 @@ export default function AdminSecretPage() {
         console.log(`Target Collection: hotels, Folder: ${folderName}`);
 
         // 2. Upload Images to Firebase Storage (Server-Side Bypass)
-        const uploadPromises = Array.from(files || []).map(async (file, i) => {
+        const uploadPromises = Array.from(files || []).map(async (file) => {
             try {
                 addLog(`جاري رفع ${file.name} عبر السيرفر (تجاوز CORS)...`, 'info');
                 
@@ -147,9 +149,10 @@ export default function AdminSecretPage() {
                 console.log(`Upload Success: ${file.name} -> ${data.url}`);
                 addLog(`✅ تم رفع ${file.name}`, 'success');
                 return { status: 'fulfilled', url: data.url };
-            } catch (error: any) {
+            } catch (error: unknown) {
+                const message = error instanceof Error ? error.message : String(error);
                 console.error(`Upload Failed: ${file.name}`, error);
-                addLog(`❌ فشل رفع ${file.name}: ${error.message}`, 'error');
+                addLog(`❌ فشل رفع ${file.name}: ${message}`, 'error');
                 return { status: 'rejected', reason: error };
             }
         });
@@ -170,6 +173,7 @@ export default function AdminSecretPage() {
         console.log("All Uploads Finished. Successful URLs:", imageUrls);
 
         // 3. Prepare Data for Firestore
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateData: any = {
             updatedAt: new Date().toISOString()
         };
@@ -270,10 +274,11 @@ export default function AdminSecretPage() {
         setStatus(`تم الحفظ بنجاح! ID: ${docRef.id}`);
         setFiles(null);
         
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
         console.error(error);
-        addLog(`خطأ عام: ${error.message}`, 'error');
-        setStatus(`فشلت العملية: ${error.message}`);
+        addLog(`خطأ عام: ${message}`, 'error');
+        setStatus(`فشلت العملية: ${message}`);
     } finally {
         setLoading(false);
     }
@@ -456,7 +461,7 @@ export default function AdminSecretPage() {
                     
                     <div className="mt-4 pt-4 border-t border-gray-800">
                         <p className="text-xs text-gray-500 text-center">
-                            في حال واجهت خطأ "Permission denied"، يرجى التأكد من قواعد الأمان في Firebase Storage.
+                            في حال واجهت خطأ &quot;Permission denied&quot;، يرجى التأكد من قواعد الأمان في Firebase Storage.
                         </p>
                     </div>
                 </div>

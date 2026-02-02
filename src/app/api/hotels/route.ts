@@ -9,7 +9,7 @@ export async function GET() {
     const hotelsRef = collection(db, "hotels");
     // Try to order by createdAt if it exists, otherwise just get all
     // Note: ordering might fail if index is missing, so we might need a simple get first
-    let q = query(hotelsRef, orderBy("createdAt", "desc"));
+    const q = query(hotelsRef, orderBy("createdAt", "desc"));
     
     let snapshot;
     try {
@@ -41,8 +41,9 @@ export async function GET() {
         }
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to fetch hotels:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }
