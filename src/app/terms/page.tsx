@@ -46,7 +46,7 @@ export default function TermsPage() {
           <section className="backdrop-blur-xl bg-white/5 border border-white/10 p-8 rounded-3xl shadow-lg">
             <h2 className="text-2xl font-bold text-white mb-4">5. إخلاء المسؤولية</h2>
             <p>
-              يتم توفير المواد الموجودة على موقع HaramStay "كما هي". لا تقدم HaramStay أي ضمانات، صريحة أو ضمنية، وتخلي مسؤوليتها عن كافة الضمانات الأخرى.
+              يتم توفير المواد الموجودة على موقع HaramStay &quot;كما هي&quot;. لا تقدم HaramStay أي ضمانات، صريحة أو ضمنية، وتخلي مسؤوليتها عن كافة الضمانات الأخرى.
             </p>
           </section>
 

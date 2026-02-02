@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import HotelCard from "@/components/HotelCard";
 import FilterSidebar, { FilterState } from "@/components/FilterSidebar";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 // تعريف شكل البيانات لمنع الأخطاء الحمراء
@@ -83,7 +83,7 @@ export default function HotelsGrid() {
         console.log("Fetched hotels:", fetchedHotels);
         setHotels(fetchedHotels);
         setLoading(false);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error processing hotel data:", err);
         setError("حدث خطأ أثناء معالجة البيانات");
         setLoading(false);

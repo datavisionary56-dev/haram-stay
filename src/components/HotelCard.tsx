@@ -16,6 +16,8 @@ interface HotelCardProps {
     images: string[];
     stars?: number;
     location?: string;
+    logo?: string;
+    distanceToHaram?: number | string;
   };
 }
 
@@ -148,13 +150,10 @@ export default function HotelCard({ hotel }: HotelCardProps) {
             </div>
 
             {/* Logo Overlay (Top Left) */}
-            {/* Note: In real data, ensure 'logo' field exists on Hotel interface if used here. 
-                Since interface doesn't strictly have it, we cast or assume it's passed. 
-                If not, we can show a placeholder or skip. */}
-            {(hotel as any).logo && (
+            {hotel.logo && (
                 <div className="absolute top-4 left-4 w-12 h-12 bg-white/90 rounded-full p-1 shadow-lg z-10 flex items-center justify-center overflow-hidden border border-[#D4AF37]">
                     <Image 
-                      src={(hotel as any).logo} 
+                      src={hotel.logo} 
                       alt="Logo" 
                       width={40} 
                       height={40} 
@@ -166,7 +165,7 @@ export default function HotelCard({ hotel }: HotelCardProps) {
 
                 {/* Content Section */}
       <div className="flex-1 p-5 flex flex-col relative bg-gradient-to-b from-[#1a1a1a] to-[#0f0f0f]">
-        
+        <Link href={linkHref} className="block">
         <div className="flex justify-between items-start mb-2">
             <div>
                 <h3 className="text-xl font-bold text-white group-hover:text-[#D4AF37] transition-colors mb-1 line-clamp-1">
@@ -202,10 +201,10 @@ export default function HotelCard({ hotel }: HotelCardProps) {
                    <FaMapMarkerAlt className="text-[#D4AF37]" />
                    <span className="line-clamp-1">{hotel.location?.replace("موقع الفندق", "").replace("...", "").trim() || "مكة المكرمة"}</span>
                 </div>
-                {(hotel as any).distanceToHaram && (
+                {hotel.distanceToHaram && (
                     <div className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded text-[10px] text-[#D4AF37]">
                         <span>🕋</span>
-                        <span>{(hotel as any).distanceToHaram} م</span>
+                        <span>{hotel.distanceToHaram} م</span>
                     </div>
                 )}
             </div>

@@ -39,7 +39,7 @@ export default function Testimonials() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {reviews.map((review, idx) => (
             <div key={idx} className="bg-white/5 backdrop-blur-md p-8 rounded-3xl border border-white/10 relative hover:bg-white/10 transition-colors">
-              <div className="text-[#D4AF37] text-4xl absolute top-6 left-6 opacity-30">"</div>
+              <div className="text-[#D4AF37] text-4xl absolute top-6 left-6 opacity-30">&quot;</div>
               
               <div className="flex gap-1 mb-4">
                 {[...Array(review.stars)].map((_, i) => (
