@@ -14,16 +14,16 @@ export interface FilterState {
 }
 
 export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(10000);
-  const [maxDistance, setMaxDistance] = useState(5000); // meters
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
+  const [maxDistance, setMaxDistance] = useState(20000); // Default to max range (20km)
   const [selectedStars, setSelectedStars] = useState<number[]>([]);
 
   // Apply filters when any state changes
   useEffect(() => {
     onFilterChange({
-      minPrice,
-      maxPrice,
+      minPrice: minPrice === "" ? 0 : Number(minPrice),
+      maxPrice: maxPrice === "" ? Infinity : Number(maxPrice),
       maxDistance,
       stars: selectedStars
     });
@@ -51,20 +51,20 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             <FaMoneyBillWave className="text-[#D4AF37]" />
             <span>السعر (ريال)</span>
           </label>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-2 relative z-10">
             <input
               type="number"
               value={minPrice}
-              onChange={(e) => setMinPrice(Number(e.target.value))}
-              className="w-1/2 bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-[#D4AF37] outline-none"
+              onChange={(e) => setMinPrice(e.target.value)}
+              className="flex-1 bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-[#D4AF37] outline-none min-w-0"
               placeholder="من"
             />
             <span className="text-white">-</span>
             <input
               type="number"
               value={maxPrice}
-              onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className="w-1/2 bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-[#D4AF37] outline-none"
+              onChange={(e) => setMaxPrice(e.target.value)}
+              className="flex-1 bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-[#D4AF37] outline-none min-w-0"
               placeholder="إلى"
             />
           </div>
@@ -79,16 +79,16 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
           <input
             type="range"
             min="0"
-            max="10000"
+            max="20000"
             step="100"
             value={maxDistance}
             onChange={(e) => setMaxDistance(Number(e.target.value))}
-            className="w-full accent-[#D4AF37] h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
+            className="w-full accent-[#D4AF37] h-2 bg-white/10 rounded-lg appearance-none cursor-pointer relative z-10"
           />
           <div className="flex justify-between text-xs text-gray-400 mt-2">
             <span>0 متر</span>
             <span className="text-[#D4AF37] font-bold">{maxDistance} متر</span>
-            <span>10 كم</span>
+            <span>20 كم</span>
           </div>
         </div>
 

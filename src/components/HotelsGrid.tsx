@@ -27,8 +27,8 @@ export default function HotelsGrid() {
 
   const [filters, setFilters] = useState<FilterState>({
     minPrice: 0,
-    maxPrice: 10000,
-    maxDistance: 5000,
+    maxPrice: Infinity,
+    maxDistance: 20000,
     stars: []
   });
 
