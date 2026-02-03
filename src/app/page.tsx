@@ -99,10 +99,8 @@ export default function HomePage() {
           <Testimonials />
         </div>
         
-        <Footer onAdminClick={() => setShowAdmin(true)} />
+        <Footer />
       </div>
-
-      {showAdmin && <AdminPanel onClose={() => setShowAdmin(false)} />}
     </main>
   );
 }

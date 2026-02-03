@@ -2,7 +2,7 @@ import React from 'react';
 import { FaHeart, FaTwitter, FaInstagram, FaSnapchatGhost, FaWhatsapp } from 'react-icons/fa';
 import Link from 'next/link';
 
-export default function Footer({ onAdminClick }: { onAdminClick?: () => void }) {
+export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white pt-16 pb-8 font-cairo relative z-30 border-t border-white/10">
       <div className="container mx-auto px-4">

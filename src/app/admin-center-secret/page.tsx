@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { FaUpload, FaSave, FaArrowRight, FaExclamationTriangle, FaCheckCircle, FaTerminal, FaWifi } from 'react-icons/fa';
+import { FaUpload, FaSave, FaArrowRight, FaTerminal, FaWifi } from 'react-icons/fa';
 import Link from 'next/link';
-import { db, storage, auth } from '@/lib/firebase';
-import { collection, addDoc, updateDoc, doc, setDoc, getDocs, query, where, arrayUnion } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, auth } from '@/lib/firebase';
+import { collection, doc, setDoc, getDocs, query, where, arrayUnion } from 'firebase/firestore';
 import { signInAnonymously } from 'firebase/auth';
 
 export default function AdminSecretPage() {

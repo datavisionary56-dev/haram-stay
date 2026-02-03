@@ -50,15 +50,6 @@ export default function HotelDetailsPage() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Booking State
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [guests, setGuests] = useState(2);
-  const [extraBed, setExtraBed] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [priceBreakdown, setPriceBreakdown] = useState<string[]>([]);
-  const [bookingNote, setBookingNote] = useState("");
-
   useEffect(() => {
     let isMounted = true;
 
@@ -100,45 +91,6 @@ export default function HotelDetailsPage() {
     }, 5000);
     return () => clearInterval(interval);
   }, [hotel]);
-
-  // Booking Calculation Logic
-  useEffect(() => {
-    if (!hotel || !checkIn || !checkOut) return;
-
-    const start = startOfDay(parseISO(checkIn));
-    const end = startOfDay(parseISO(checkOut));
-    const days = differenceInDays(end, start);
-
-    if (days <= 0) {
-      setTotalPrice(0);
-      setPriceBreakdown(["يرجى اختيار تواريخ صحيحة"]);
-      return;
-    }
-
-    let total = 0;
-    const breakdown: string[] = [];
-    const note = "";
-    const commission = hotel.pricingRules?.commission || 0;
-    const basePrice = hotel.price || 300;
-
-    // Simple calculation for now (fallback logic)
-    const nightlyPrice = basePrice + commission;
-    total = nightlyPrice * days;
-    breakdown.push(`سعر الليلة: ${nightlyPrice} ريال`);
-    
-    if (extraBed) {
-        const extraBedPrice = 100; // Default extra bed price
-        total += extraBedPrice * days;
-        breakdown.push(`سرير إضافي: ${extraBedPrice} ريال/ليلة`);
-    }
-
-    breakdown.push(`الإجمالي لـ ${days} ليلة: ${total.toLocaleString()} ريال`);
-
-    setTotalPrice(total);
-    setPriceBreakdown(breakdown);
-    setBookingNote(note);
-
-  }, [checkIn, checkOut, extraBed, hotel]);
 
   if (loading) {
     return (

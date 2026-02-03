@@ -15,7 +15,7 @@ export async function GET() {
     try {
         snapshot = await getDocs(q);
     } catch (e) {
-        console.warn("Sorting by createdAt failed (index missing?), falling back to default sort");
+        console.warn("Sorting by createdAt failed (index missing?), falling back to default sort", e);
         snapshot = await getDocs(collection(db, "hotels"));
     }
 

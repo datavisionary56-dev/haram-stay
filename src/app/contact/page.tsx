@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { FaTwitter, FaInstagram, FaSnapchat, FaWhatsapp } from 'react-icons/fa';
 
 export default function ContactPage() {
   return (
