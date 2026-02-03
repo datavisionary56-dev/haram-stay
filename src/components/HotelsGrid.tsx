@@ -1,7 +1,6 @@
 "use client";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import HotelCard from "@/components/HotelCard";
-import FilterSidebar, { FilterState } from "@/components/FilterSidebar";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -24,27 +23,6 @@ export default function HotelsGrid() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const [filters, setFilters] = useState<FilterState>({
-    minPrice: 0,
-    maxPrice: Infinity,
-    maxDistance: 20000,
-    stars: []
-  });
-
-  const filteredHotels = useMemo(() => {
-    return hotels.filter(hotel => {
-      const price = hotel.price || 0;
-      const distance = hotel.distanceToHaram || 0;
-      const stars = hotel.stars || 0;
-
-      const matchesPrice = price >= filters.minPrice && price <= filters.maxPrice;
-      const matchesDistance = distance <= filters.maxDistance;
-      const matchesStars = filters.stars.length === 0 || filters.stars.includes(stars);
-
-      return matchesPrice && matchesDistance && matchesStars;
-    });
-  }, [hotels, filters]);
 
   useEffect(() => {
     // إعداد استعلام لجلب الفنادق (بدون ترتيب مؤقتاً للتأكد من وجود بيانات)
@@ -101,16 +79,11 @@ export default function HotelsGrid() {
   // ... (keep useEffect)
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start">
-      {/* Sidebar */}
-      <aside className="w-full lg:w-1/4 sticky top-24 z-30">
-        <FilterSidebar onFilterChange={setFilters} />
-      </aside>
-
+    <div className="w-full">
       {/* Grid Content */}
-      <div className="w-full lg:w-3/4">
+      <div className="w-full">
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="bg-[#0a0a0a] rounded-[2rem] h-[400px] border border-zinc-800 animate-pulse relative overflow-hidden">
                 <div className="h-2/3 bg-zinc-900/50 w-full" />
@@ -132,14 +105,9 @@ export default function HotelsGrid() {
             <h3 className="text-2xl font-bold text-white mb-2">لا توجد فنادق حالياً</h3>
             <p className="text-gray-400">كن أول من يضيف فندقاً في لوحة التحكم!</p>
           </div>
-        ) : filteredHotels.length === 0 ? (
-          <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
-            <h3 className="text-2xl font-bold text-white mb-2">لا توجد نتائج مطابقة</h3>
-            <p className="text-gray-400">حاول تغيير خيارات التصفية</p>
-          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {filteredHotels.map((hotel) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {hotels.map((hotel) => (
               <HotelCard key={hotel.id} hotel={hotel} />
             ))}
           </div>
