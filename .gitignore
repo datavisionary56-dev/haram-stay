@@ -44,3 +44,6 @@ next-env.d.ts
 
 # security
 service-account.json
+
+# python virtual environment
+.venv

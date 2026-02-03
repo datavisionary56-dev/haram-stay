@@ -16,6 +16,7 @@ const eslintConfig = defineConfig([
     "*.js",
     "*.mjs",
     "scripts/**",
+    ".venv/**",
   ]),
 ]);
 
