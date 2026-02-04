@@ -16,11 +16,11 @@ interface HotelMarqueeSectionProps {
 }
 
 export default function HotelMarqueeSection({ title, hotels }: HotelMarqueeSectionProps) {
-  if (!hotels || hotels.length === 0) return null;
+  // if (!hotels || hotels.length === 0) return null; // REMOVED to show empty sections
 
   // Duplicate list to ensure seamless infinite scroll
   // We duplicate enough times to ensure it fills screens even if few hotels
-  const marqueeHotels = [...hotels, ...hotels, ...hotels, ...hotels]; 
+  const marqueeHotels = hotels && hotels.length > 0 ? [...hotels, ...hotels, ...hotels, ...hotels] : [];
 
   return (
     <div className="w-full py-8 border-b border-white/5 last:border-0 overflow-hidden">
@@ -30,24 +30,27 @@ export default function HotelMarqueeSection({ title, hotels }: HotelMarqueeSecti
         </h2>
       </div>
 
-      <div className="relative w-full group">
-        {/* Gradient Masks for fading edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-black to-transparent z-20 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-black to-transparent z-20 pointer-events-none" />
+      <div className="relative w-full group min-h-[200px] flex items-center justify-center">
+        {hotels && hotels.length > 0 ? (
+            <>
+                {/* Gradient Masks for fading edges */}
+                <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-black to-transparent z-20 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-black to-transparent z-20 pointer-events-none" />
 
-        {/* Marquee Container */}
-        <div className="flex w-full overflow-hidden">
-          <div className="flex items-center animate-marquee group-hover:[animation-play-state:paused] py-4">
-             {marqueeHotels.map((hotel, index) => (
-               <HotelMarqueeCard key={`${hotel.id}-${index}`} hotel={hotel} />
-             ))}
-          </div>
-          {/* Duplicate for seamless loop if using CSS translate method 
-              Actually, the standard way is to have two identical sets moving.
-              My animate-marquee usually moves -50% or -100%. 
-              If I have one long strip, I need to make sure it's long enough.
-          */}
-        </div>
+                {/* Marquee Container */}
+                <div className="flex w-full overflow-hidden">
+                <div className="flex items-center animate-marquee group-hover:[animation-play-state:paused] py-4">
+                    {marqueeHotels.map((hotel, index) => (
+                    <HotelMarqueeCard key={`${hotel.id}-${index}`} hotel={hotel} />
+                    ))}
+                </div>
+                </div>
+            </>
+        ) : (
+            <div className="text-center text-gray-500 py-10 w-full bg-white/5 rounded-xl border border-dashed border-white/10 mx-4">
+                <p className="text-lg font-cairo">سيتم إضافة العروض قريباً...</p>
+            </div>
+        )}
       </div>
       
       <style jsx global>{`

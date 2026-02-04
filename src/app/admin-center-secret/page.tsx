@@ -17,14 +17,15 @@ export default function AdminSecretPage() {
   const [category, setCategory] = useState('front_row'); // Default category
 
   // Prices State
-  const [priceNightly, setPriceNightly] = useState('');
-  const [priceWeekend, setPriceWeekend] = useState('');
-  const [priceLast10, setPriceLast10] = useState('');
+  const [priceRamadan1to20, setPriceRamadan1to20] = useState(''); // Was priceNightly
+  const [priceRamadanLast10, setPriceRamadanLast10] = useState(''); // Was priceLast10
   
   // New Fields
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
   const [extraBedPrice, setExtraBedPrice] = useState('');
+  const [stars, setStars] = useState('5');
+  const [distance, setDistance] = useState('');
+  const [streetName, setStreetName] = useState('');
+
   const [files, setFiles] = useState<FileList | null>(null);
   const [projectId, setProjectId] = useState('');
 
@@ -179,17 +180,22 @@ export default function AdminSecretPage() {
         };
 
         if (hotelName) updateData.name = hotelName;
-        if (priceNightly) updateData.price = Number(priceNightly);
+        if (priceRamadan1to20) updateData.priceRamadan1to20 = Number(priceRamadan1to20);
+        if (priceRamadanLast10) updateData.priceRamadanLast10 = Number(priceRamadanLast10);
+        if (extraBedPrice) updateData.extraBedPrice = Number(extraBedPrice);
+        if (stars) updateData.stars = Number(stars);
+        if (distance) updateData.distance = distance;
+        if (streetName) updateData.streetName = streetName;
         updateData.category = category; // Save category
 
-        // Pricing Rules
+        // Pricing Rules (Legacy Support & Structure)
         const newRange = {
-            start: startDate || new Date().toISOString().split('T')[0],
-            end: endDate || "2025-12-31",
-            weekdayPrice: Number(priceNightly || 0),
-            weekendPrice: Number(priceWeekend || priceNightly || 0),
+            start: "2025-03-01", // Ramadan Start approx
+            end: "2025-03-20",
+            weekdayPrice: Number(priceRamadan1to20 || 0),
+            weekendPrice: Number(priceRamadan1to20 || 0),
             extraBed: Number(extraBedPrice || 0),
-            notes: "السعر الأساسي"
+            notes: "1-20 رمضان"
         };
         
         // 4. Save to Firestore
@@ -231,20 +237,20 @@ export default function AdminSecretPage() {
                  commission: 0,
                  ranges: [newRange]
              };
-             if (priceLast10) {
+             if (priceRamadanLast10) {
                  finalData.pricingRules.ranges.push({
                     start: "2025-03-20", 
                     end: "2025-03-30",
-                    weekdayPrice: Number(priceLast10),
-                    weekendPrice: Number(priceLast10),
+                    weekdayPrice: Number(priceRamadanLast10),
+                    weekendPrice: Number(priceRamadanLast10),
                     extraBed: Number(extraBedPrice || 0),
                     notes: "العشر الأواخر",
                     isPackage: true,
-                    packagePrice: Number(priceLast10)
+                    packagePrice: Number(priceRamadanLast10)
                  });
              }
              finalData.city = "مكة المكرمة";
-             finalData.stars = 5;
+             finalData.stars = Number(stars);
              finalData.description = "وصف الفندق...";
              finalData.location = "موقع الفندق...";
              finalData.facilities = ["واي فاي", "موقف سيارات"];
@@ -255,16 +261,16 @@ export default function AdminSecretPage() {
                  commission: 0,
                  ranges: [newRange]
              };
-             if (priceLast10) {
+             if (priceRamadanLast10) {
                  finalData.pricingRules.ranges.push({
                     start: "2025-03-20", 
                     end: "2025-03-30",
-                    weekdayPrice: Number(priceLast10),
-                    weekendPrice: Number(priceLast10),
+                    weekdayPrice: Number(priceRamadanLast10),
+                    weekendPrice: Number(priceRamadanLast10),
                     extraBed: Number(extraBedPrice || 0),
                     notes: "العشر الأواخر",
                     isPackage: true,
-                    packagePrice: Number(priceLast10)
+                    packagePrice: Number(priceRamadanLast10)
                  });
              }
         }
@@ -339,78 +345,90 @@ export default function AdminSecretPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-300">سعر الليلة (عادية)</label>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">سعر الليلة (1-20 رمضان)</label>
                         <input 
                             type="number" 
-                            value={priceNightly}
-                            onChange={(e) => setPriceNightly(e.target.value)}
+                            value={priceRamadan1to20}
+                            onChange={(e) => setPriceRamadan1to20(e.target.value)}
                             className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
                             placeholder="مثال: 450"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-300">سعر الويك إيند</label>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">سعر الليلة (العشر الأواخر)</label>
                         <input 
                             type="number" 
-                            value={priceWeekend}
-                            onChange={(e) => setPriceWeekend(e.target.value)}
+                            value={priceRamadanLast10}
+                            onChange={(e) => setPriceRamadanLast10(e.target.value)}
                             className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
-                            placeholder="مثال: 550"
+                            placeholder="مثال: 3500"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-300">سعر الويك إيند</label>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">سعر السرير الإضافي</label>
                         <input 
                             type="number" 
-                            value={priceWeekend}
-                            onChange={(e) => setPriceWeekend(e.target.value)}
+                            value={extraBedPrice}
+                            onChange={(e) => setExtraBedPrice(e.target.value)}
                             className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
-                            placeholder="مثال: 550"
+                            placeholder="مثال: 150"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-300">تاريخ البداية (من)</label>
-                        <input 
-                            type="date" 
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
+                        <label className="block text-sm font-medium mb-2 text-gray-300">عدد النجوم</label>
+                        <select 
+                            value={stars}
+                            onChange={(e) => setStars(e.target.value)}
                             className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
+                        >
+                            <option value="1">1 نجمة</option>
+                            <option value="2">2 نجمة</option>
+                            <option value="3">3 نجوم</option>
+                            <option value="4">4 نجوم</option>
+                            <option value="5">5 نجوم</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">المسافة للحرم (متر)</label>
+                        <input 
+                            type="text" 
+                            value={distance}
+                            onChange={(e) => setDistance(e.target.value)}
+                            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
+                            placeholder="مثال: 100 متر"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-300">تاريخ النهاية (إلى)</label>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">اسم الشارع (اختياري)</label>
                         <input 
-                            type="date" 
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
+                            type="text" 
+                            value={streetName}
+                            onChange={(e) => setStreetName(e.target.value)}
                             className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
+                            placeholder="مثال: شارع أجياد"
                         />
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-300">سعر السرير الإضافي</label>
-                    <input 
-                        type="number" 
-                        value={extraBedPrice}
-                        onChange={(e) => setExtraBedPrice(e.target.value)}
-                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
-                        placeholder="مثال: 150"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-300">سعر العشر الأواخر</label>
-                    <input 
-                        type="number" 
-                        value={priceLast10}
-                        onChange={(e) => setPriceLast10(e.target.value)}
-                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
-                        placeholder="مثال: 35000"
-                    />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-300">تصنيف العرض (الصفحة الرئيسية)</label>
+                    <select 
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white"
+                    >
+                      <option value="front_row">فنادق الصف الأول (Front Row)</option>
+                      <option value="ajyad_khalil">فنادق إبراهيم الخليل وأجياد</option>
+                      <option value="madinah">فنادق المدينة المنورة</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center hover:border-[#D4AF37] transition-colors">

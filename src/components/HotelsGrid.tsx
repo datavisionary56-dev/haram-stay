@@ -9,6 +9,10 @@ interface Hotel {
   name: string;
   stars: number;
   price: number;
+  priceRamadan1to20?: number;
+  priceRamadanLast10?: number;
+  distance?: string;
+  streetName?: string;
   category: string;
   [key: string]: any;
 }
@@ -27,6 +31,10 @@ export default function HotelsGrid() {
           name: data.name || data.hotelName || "فندق بدون اسم",
           stars: Number(data.stars || 0),
           price: Number(data.price || data.night_price || 0),
+          priceRamadan1to20: Number(data.priceRamadan1to20 || data.price || 0),
+          priceRamadanLast10: Number(data.priceRamadanLast10 || 0),
+          distance: data.distance || "",
+          streetName: data.streetName || "",
           category: data.category || "front_row", // Default to front_row if missing
           ...data
         } as Hotel;
