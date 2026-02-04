@@ -1,118 +1,68 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import HotelCard from "@/components/HotelCard";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import HotelMarqueeSection from "./HotelMarqueeSection";
 
-// تعريف شكل البيانات لمنع الأخطاء الحمراء
 interface Hotel {
   id: string;
-  name?: string;
-  description?: string;
-  images: string[];
-  stars?: number;
-  price1to20?: number;
-  price?: number;
-  location?: string;
-  lat?: number;
-  lng?: number;
-  distanceToHaram?: number;
+  name: string;
+  stars: number;
+  price: number;
+  category: string;
+  [key: string]: any;
 }
 
 export default function HotelsGrid() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // إعداد استعلام لجلب الفنادق (بدون ترتيب مؤقتاً للتأكد من وجود بيانات)
     const q = collection(db, "hotels");
-    console.log(`Listening to collection "hotels" in project: ${db.app.options.projectId}`);
-
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      try {
-        console.log(`Snapshot received! Size: ${snapshot.size}`);
-        if (snapshot.empty) {
-            console.log("No hotels found in Firestore.");
-            setHotels([]);
-            setLoading(false);
-            return;
-        }
-
-        const fetchedHotels = snapshot.docs.map(doc => {
-          const data = doc.data();
-          console.log("Doc Data:", data);
-          // تعيين البيانات مع التحقق من الحقول
-          return {
-            id: doc.id,
-            name: data.name || data.hotelName || "فندق بدون اسم",
-            description: data.description || "",
-            images: Array.isArray(data.images) ? data.images : [],
-            stars: Number(data.stars || 0),
-            price: Number(data.price || data.night_price || 0),
-            price1to20: Number(data.price1to20 || 0),
-            location: data.location || "مكة المكرمة",
-            lat: Number(data.lat || 0),
-            lng: Number(data.lng || 0),
-            distanceToHaram: data.distanceToHaram !== undefined ? Number(data.distanceToHaram) : 10000,
-          } as Hotel;
-        });
-
-        console.log("Fetched hotels:", fetchedHotels);
-        setHotels(fetchedHotels);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error processing hotel data:", err);
-        setError("حدث خطأ أثناء معالجة البيانات");
-        setLoading(false);
-      }
-    }, (err) => {
-      console.error("Error fetching hotels:", err);
-      setError(err.message);
+      const fetchedHotels = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || data.hotelName || "فندق بدون اسم",
+          stars: Number(data.stars || 0),
+          price: Number(data.price || data.night_price || 0),
+          category: data.category || "front_row", // Default to front_row if missing
+          ...data
+        } as Hotel;
+      });
+      setHotels(fetchedHotels);
       setLoading(false);
     });
 
-    // تنظيف المستمع عند إلغاء تحميل المكون
     return () => unsubscribe();
   }, []);
 
-  // ... (keep useEffect)
+  if (loading) {
+    return (
+        <div className="w-full py-20 text-center">
+            <div className="inline-block w-8 h-8 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin"></div>
+            <p className="mt-4 text-gray-400">جاري تحميل الفنادق...</p>
+        </div>
+    );
+  }
+
+  // Filter hotels by category
+  const frontRowHotels = hotels.filter(h => h.category === 'front_row');
+  const ajyadKhalilHotels = hotels.filter(h => h.category === 'ajyad_khalil');
+  const madinahHotels = hotels.filter(h => h.category === 'madinah');
 
   return (
-    <div className="w-full">
-      {/* Grid Content */}
-      <div className="w-full">
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-[#0a0a0a] rounded-[2rem] h-[400px] border border-zinc-800 animate-pulse relative overflow-hidden">
-                <div className="h-2/3 bg-zinc-900/50 w-full" />
-                <div className="p-6 space-y-3">
-                  <div className="h-6 bg-zinc-900/50 rounded w-3/4" />
-                  <div className="h-4 bg-zinc-900/50 rounded w-1/2" />
-                </div>
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-              </div>
-            ))}
+    <div className="w-full flex flex-col gap-8 pb-20">
+      <HotelMarqueeSection title="فنادق الصف الأول" hotels={frontRowHotels} />
+      <HotelMarqueeSection title="فنادق إبراهيم الخليل وأجياد" hotels={ajyadKhalilHotels} />
+      <HotelMarqueeSection title="فنادق المدينة المنورة" hotels={madinahHotels} />
+      
+      {hotels.length === 0 && (
+          <div className="text-center py-20 text-gray-500">
+              لا توجد فنادق متاحة حالياً.
           </div>
-        ) : error ? (
-          <div className="text-center py-20 bg-red-900/20 rounded-3xl border border-red-500/50">
-            <h3 className="text-2xl font-bold text-red-500 mb-2">عذراً، حدث خطأ في تحميل الفنادق</h3>
-            <p className="text-gray-300">{error}</p>
-          </div>
-        ) : hotels.length === 0 ? (
-          <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
-            <h3 className="text-2xl font-bold text-white mb-2">لا توجد فنادق حالياً</h3>
-            <p className="text-gray-400">كن أول من يضيف فندقاً في لوحة التحكم!</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {hotels.map((hotel) => (
-              <HotelCard key={hotel.id} hotel={hotel} />
-            ))}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }

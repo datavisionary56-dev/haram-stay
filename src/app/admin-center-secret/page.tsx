@@ -14,7 +14,8 @@ export default function AdminSecretPage() {
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
   const [selectedHotel, setSelectedHotel] = useState('fairmont');
   const [newHotelName, setNewHotelName] = useState('');
-  
+  const [category, setCategory] = useState('front_row'); // Default category
+
   // Prices State
   const [priceNightly, setPriceNightly] = useState('');
   const [priceWeekend, setPriceWeekend] = useState('');
@@ -179,6 +180,7 @@ export default function AdminSecretPage() {
 
         if (hotelName) updateData.name = hotelName;
         if (priceNightly) updateData.price = Number(priceNightly);
+        updateData.category = category; // Save category
 
         // Pricing Rules
         const newRange = {
@@ -359,6 +361,16 @@ export default function AdminSecretPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">سعر الويك إيند</label>
+                        <input 
+                            type="number" 
+                            value={priceWeekend}
+                            onChange={(e) => setPriceWeekend(e.target.value)}
+                            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
+                            placeholder="مثال: 550"
+                        />
+                    </div>
                     <div>
                         <label className="block text-sm font-medium mb-2 text-gray-300">تاريخ البداية (من)</label>
                         <input 
