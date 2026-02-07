@@ -8,6 +8,7 @@ interface HotelMarqueeCardProps {
     price: number; // Fallback or main price
     priceRamadan1to20?: number;
     priceRamadanLast10?: number;
+    extraBedPrice?: number;
     distance?: string;
     streetName?: string;
   };
@@ -24,7 +25,7 @@ export default function HotelMarqueeCard({ hotel }: HotelMarqueeCardProps) {
       href={whatsappLink}
       target="_blank"
       rel="noopener noreferrer"
-      className="block group relative w-80 h-48 bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden hover:border-[#D4AF37] transition-all duration-300 flex-shrink-0 mx-4 cursor-pointer shadow-lg hover:shadow-[#D4AF37]/20"
+      className="block group relative w-80 h-56 bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden hover:border-[#D4AF37] transition-all duration-300 flex-shrink-0 mx-4 cursor-pointer shadow-lg hover:shadow-[#D4AF37]/20"
     >
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-24 h-24 bg-[#D4AF37]/5 rounded-bl-full z-0 transition-transform group-hover:scale-150 duration-500" />
@@ -70,6 +71,15 @@ export default function HotelMarqueeCard({ hotel }: HotelMarqueeCardProps) {
                   {hotel.priceRamadanLast10 ? hotel.priceRamadanLast10 : '---'} <span className="text-[10px] font-cairo">ريال</span>
                 </span>
             </div>
+            {/* Extra Bed Price - Only if exists */}
+            {hotel.extraBedPrice && hotel.extraBedPrice > 0 && (
+                <div className="flex justify-between items-center w-full pr-1 mt-1 border-t border-white/5 pt-1">
+                    <span className="text-[10px] text-zinc-400 font-cairo">السرير الإضافي</span>
+                    <span className="text-xs font-bold text-white font-mono">
+                      {hotel.extraBedPrice} <span className="text-[9px] text-[#D4AF37] font-cairo">ريال</span>
+                    </span>
+                </div>
+            )}
           </div>
           
           <div className="w-8 h-8 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 mr-2 flex-shrink-0">

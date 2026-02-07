@@ -8,6 +8,7 @@ interface Hotel {
   name: string;
   stars: number;
   price: number;
+  extraBedPrice?: number;
   [key: string]: unknown;
 }
 

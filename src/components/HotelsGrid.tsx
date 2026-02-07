@@ -11,6 +11,7 @@ interface Hotel {
   price: number;
   priceRamadan1to20?: number;
   priceRamadanLast10?: number;
+  extraBedPrice?: number;
   distance?: string;
   streetName?: string;
   category: string;
@@ -33,6 +34,7 @@ export default function HotelsGrid() {
           price: Number(data.price || data.night_price || 0),
           priceRamadan1to20: Number(data.priceRamadan1to20 || data.price || 0),
           priceRamadanLast10: Number(data.priceRamadanLast10 || 0),
+          extraBedPrice: Number(data.extraBedPrice || 0),
           distance: data.distance || "",
           streetName: data.streetName || "",
           category: data.category || "front_row", // Default to front_row if missing
