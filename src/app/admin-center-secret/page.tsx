@@ -18,6 +18,7 @@ export default function AdminSecretPage() {
 
   // Prices State
   const [priceRamadan1to20, setPriceRamadan1to20] = useState(''); // Was priceNightly
+  const [weekendPrice, setWeekendPrice] = useState(''); // New State for Weekend Price
   const [priceRamadanLast10, setPriceRamadanLast10] = useState(''); // Was priceLast10
   
   // New Fields
@@ -182,6 +183,7 @@ export default function AdminSecretPage() {
 
         if (hotelName) updateData.name = hotelName;
         if (priceRamadan1to20) updateData.priceRamadan1to20 = Number(priceRamadan1to20);
+        if (weekendPrice) updateData.weekendPrice = Number(weekendPrice); // Save Weekend Price
         if (priceRamadanLast10) updateData.priceRamadanLast10 = Number(priceRamadanLast10);
         if (extraBedPrice) updateData.extraBedPrice = Number(extraBedPrice);
         if (stars) updateData.stars = Number(stars);
@@ -356,6 +358,19 @@ export default function AdminSecretPage() {
                         />
                     </div>
                     <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">سعر الويك إند (اختياري)</label>
+                        <input 
+                            type="number" 
+                            value={weekendPrice}
+                            onChange={(e) => setWeekendPrice(e.target.value)}
+                            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
+                            placeholder="مثال: 600"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
                         <label className="block text-sm font-medium mb-2 text-gray-300">سعر الليلة (العشر الأواخر)</label>
                         <input 
                             type="number" 
@@ -365,9 +380,6 @@ export default function AdminSecretPage() {
                             placeholder="مثال: 3500"
                         />
                     </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium mb-2 text-gray-300">سعر السرير الإضافي</label>
                         <input 

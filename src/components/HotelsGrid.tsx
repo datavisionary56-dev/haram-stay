@@ -10,6 +10,7 @@ interface Hotel {
   stars: number;
   price: number;
   priceRamadan1to20?: number;
+  weekendPrice?: number;
   priceRamadanLast10?: number;
   extraBedPrice?: number;
   distance?: string;
@@ -33,6 +34,7 @@ export default function HotelsGrid() {
           stars: Number(data.stars || 0),
           price: Number(data.price || data.night_price || 0),
           priceRamadan1to20: Number(data.priceRamadan1to20 || data.price || 0),
+          weekendPrice: Number(data.weekendPrice || 0),
           priceRamadanLast10: Number(data.priceRamadanLast10 || 0),
           extraBedPrice: Number(data.extraBedPrice || 0),
           distance: data.distance || "",
