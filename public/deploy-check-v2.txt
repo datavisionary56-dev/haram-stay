@@ -1,0 +1,4 @@
+Deployment Verification
+Timestamp: 2026-02-07 22:30:00
+Version: v2.0
+Commit: Weekend Price & Extra Bed Fixes verified.
