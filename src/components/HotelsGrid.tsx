@@ -14,7 +14,7 @@ interface Hotel {
   distance?: string;
   streetName?: string;
   category: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export default function HotelsGrid() {

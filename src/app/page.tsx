@@ -4,14 +4,14 @@ import { motion } from "framer-motion";
 import { FaMosque, FaMoon } from "react-icons/fa";
 import HotelsGrid from "@/components/HotelsGrid"; 
 import Footer from "@/components/Footer";
-import AdminPanel from "@/components/AdminPanel";
+// import AdminPanel from "@/components/AdminPanel";
 import TrustFeatures from "@/components/TrustFeatures";
 import Testimonials from "@/components/Testimonials";
 import LiveStream from "@/components/LiveStream";
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
-  const [showAdmin, setShowAdmin] = useState(false);
+  // const [showAdmin, setShowAdmin] = useState(false);
 
   useEffect(() => {
     // Small timeout to avoid "setState in effect" warning and ensure hydration matches

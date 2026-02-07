@@ -7,7 +7,7 @@ interface Hotel {
   name: string;
   stars: number;
   price: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface HotelMarqueeSectionProps {

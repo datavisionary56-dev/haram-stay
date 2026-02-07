@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { FaStar, FaMapMarkerAlt, FaWifi, FaParking, FaCoffee, FaConciergeBell, FaWhatsapp } from "react-icons/fa";
 import Image from "next/image";
 
 import Link from "next/link";
-import { differenceInDays, parseISO, startOfDay } from "date-fns";
+// import { differenceInDays, parseISO, startOfDay } from "date-fns"; // Removed unused imports
 import { motion } from "framer-motion";
 import BookingModal from "@/components/BookingModal";
 
@@ -117,9 +118,9 @@ export default function HotelDetailsPage() {
 
   if (!hotel) return null;
 
-  const currentImage = hotel.images && hotel.images.length > 0 
-    ? hotel.images[activeImageIndex] 
-    : "/images/dar_al_wafideen/dar_al_wafideen_1.webp";
+    // const currentImage = hotel.images && hotel.images.length > 0 
+    //   ? hotel.images[activeImageIndex] 
+    //   : "/images/dar_al_wafideen/dar_al_wafideen_1.webp"; // Unused variable commented out
 
   return (
     <div className="relative min-h-screen bg-black font-sans text-white overflow-x-hidden" dir="rtl">

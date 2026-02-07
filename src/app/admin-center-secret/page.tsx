@@ -77,6 +77,7 @@ export default function AdminSecretPage() {
       }
   };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
