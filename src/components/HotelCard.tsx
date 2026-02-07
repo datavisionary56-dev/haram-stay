@@ -13,6 +13,10 @@ interface HotelCardProps {
     description?: string;
     price1to20?: number;
     price?: number;
+    weekendPrice?: number;
+    extraBedPrice?: number;
+    priceRamadan1to20?: number;
+    priceRamadanLast10?: number;
     images: string[];
     stars?: number;
     location?: string;
@@ -195,6 +199,24 @@ export default function HotelCard({ hotel }: HotelCardProps) {
                 {hotel.description}
               </p>
             )}
+
+            {/* Additional Prices */}
+            <div className="flex flex-col gap-1 mb-3 text-xs border-t border-white/5 pt-2">
+                 {/* Weekend Price */}
+                 {hotel.weekendPrice && hotel.weekendPrice > 0 && (
+                    <div className="flex justify-between items-center text-zinc-300">
+                        <span>سعر الويك إند:</span>
+                        <span className="text-[#D4AF37] font-bold font-mono">{hotel.weekendPrice} ريال</span>
+                    </div>
+                 )}
+                 {/* Extra Bed Price */}
+                 {hotel.extraBedPrice && hotel.extraBedPrice > 0 && (
+                    <div className="flex justify-between items-center text-zinc-300">
+                        <span>السرير الإضافي:</span>
+                        <span className="text-[#D4AF37] font-bold font-mono">{hotel.extraBedPrice} ريال</span>
+                    </div>
+                 )}
+            </div>
 
             <div className="flex items-center text-gray-400 text-xs mb-4 gap-2">
                 <div className="flex items-center gap-1">
