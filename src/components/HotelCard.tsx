@@ -177,7 +177,7 @@ export default function HotelCard({ hotel }: HotelCardProps) {
       </div>
 
                 {/* Content Section */}
-      <div className="flex-1 p-5 flex flex-col relative bg-gradient-to-b from-[#1a1a1a] to-[#0f0f0f]">
+      <div className="flex-1 p-5 flex flex-col relative bg-transparent">
         <Link href={linkHref} className="block">
         <div className="flex justify-between items-start mb-2">
             <div>

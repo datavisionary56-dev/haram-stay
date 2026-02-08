@@ -27,7 +27,13 @@ export default function HotelMarqueeCard({ hotel }: HotelMarqueeCardProps) {
       href={whatsappLink}
       target="_blank"
       rel="noopener noreferrer"
-      className="block group relative w-80 h-64 bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden hover:border-[#D4AF37] transition-all duration-300 flex-shrink-0 mx-4 cursor-pointer shadow-lg hover:shadow-[#D4AF37]/20"
+      className="block group relative w-80 h-64 rounded-xl overflow-hidden transition-all duration-300 flex-shrink-0 mx-4 cursor-pointer shadow-lg hover:shadow-[#D4AF37]/20"
+      style={{
+        background: "rgba(255, 255, 255, 0.05)",
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        fontFamily: "'Cairo', sans-serif"
+      }}
     >
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-24 h-24 bg-[#D4AF37]/5 rounded-bl-full z-0 transition-transform group-hover:scale-150 duration-500" />
