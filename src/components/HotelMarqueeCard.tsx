@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaWhatsapp, FaStar, FaMapMarkerAlt, FaRoad } from 'react-icons/fa';
+import { FaWhatsapp, FaStar, FaMapMarkerAlt, FaRoad, FaCoffee } from 'react-icons/fa';
 
 interface HotelMarqueeCardProps {
   hotel: {
@@ -12,6 +12,7 @@ interface HotelMarqueeCardProps {
     extraBedPrice?: number;
     distance?: string;
     streetName?: string;
+    breakfastIncluded?: boolean;
   };
 }
 
@@ -42,6 +43,12 @@ export default function HotelMarqueeCard({ hotel }: HotelMarqueeCardProps) {
                 {[...Array(5)].map((_, i) => (
                   <FaStar key={i} className={i < hotel.stars ? "fill-current" : "text-zinc-600"} />
                 ))}
+                {hotel.breakfastIncluded && (
+                   <div className="flex items-center gap-1 mr-2 bg-emerald-900/50 px-1.5 py-0.5 rounded border border-emerald-500/30" title="شامل الإفطار">
+                      <FaCoffee className="text-emerald-400 text-[10px]" />
+                      <span className="text-[8px] text-emerald-200 font-cairo">إفطار</span>
+                   </div>
+                )}
              </div>
              {/* Distance & Street (Small) */}
              <div className="flex flex-col items-end text-[10px] text-zinc-400 font-cairo">

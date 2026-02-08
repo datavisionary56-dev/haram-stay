@@ -26,6 +26,7 @@ export default function AdminSecretPage() {
   const [stars, setStars] = useState('5');
   const [distance, setDistance] = useState('');
   const [streetName, setStreetName] = useState('');
+  const [breakfastIncluded, setBreakfastIncluded] = useState(false);
 
   const [files, setFiles] = useState<FileList | null>(null);
   const [projectId, setProjectId] = useState('');
@@ -189,6 +190,7 @@ export default function AdminSecretPage() {
         if (stars) updateData.stars = Number(stars);
         if (distance) updateData.distance = distance;
         if (streetName) updateData.streetName = streetName;
+        updateData.breakfastIncluded = breakfastIncluded; // Save Breakfast Status
         updateData.category = category; // Save category
 
         // Pricing Rules (Legacy Support & Structure)
@@ -418,15 +420,31 @@ export default function AdminSecretPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-300">اسم الشارع (اختياري)</label>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">اسم الشارع</label>
                         <input 
                             type="text" 
                             value={streetName}
                             onChange={(e) => setStreetName(e.target.value)}
-                            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-center"
+                            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:outline-none text-white text-right"
                             placeholder="مثال: شارع أجياد"
                         />
                     </div>
+                </div>
+
+                {/* Breakfast Toggle */}
+                <div className="mb-6 flex items-center gap-4 bg-gray-800 p-4 rounded-lg border border-gray-700">
+                     <input 
+                       type="checkbox" 
+                       id="breakfastIncluded"
+                       checked={breakfastIncluded}
+                       onChange={(e) => setBreakfastIncluded(e.target.checked)}
+                       className="w-6 h-6 text-[#D4AF37] bg-gray-700 border-gray-600 rounded focus:ring-[#D4AF37] focus:ring-2"
+                     />
+                     <label htmlFor="breakfastIncluded" className="text-white font-bold cursor-pointer select-none flex items-center gap-2">
+                        <span>☕</span>
+                        <span>شامل الإفطار</span>
+                        <span className="text-xs text-gray-400 font-normal">(ضع علامة صح إذا كان السعر يشمل الإفطار)</span>
+                     </label>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

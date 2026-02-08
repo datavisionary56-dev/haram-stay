@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
-import { FaStar, FaMapMarkerAlt, FaWhatsapp, FaCheckCircle } from "react-icons/fa";
+import { FaStar, FaMapMarkerAlt, FaWhatsapp, FaCheckCircle, FaCoffee } from "react-icons/fa";
 import BookingModal from "./BookingModal";
 
 interface HotelCardProps {
@@ -22,6 +22,7 @@ interface HotelCardProps {
     location?: string;
     logo?: string;
     distanceToHaram?: number | string;
+    breakfastIncluded?: boolean;
   };
 }
 
@@ -64,12 +65,12 @@ export default function HotelCard({ hotel }: HotelCardProps) {
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      whileHover={{ y: -10 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="group relative rounded-3xl overflow-hidden cursor-pointer h-[500px] shadow-2xl border border-white/10 flex flex-col"
+      whileHover={{ y: -10, scale: 1.02 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="group relative rounded-3xl overflow-hidden cursor-pointer h-[500px] shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_rgba(212,175,55,0.15)] border border-white/10 flex flex-col font-cairo transition-all duration-300"
       style={{
-        background: "rgba(20, 20, 20, 0.8)",
-        backdropFilter: "blur(25px)",
+        background: "rgba(20, 20, 20, 0.9)",
+        backdropFilter: "blur(20px)",
       }}
     >
       {/* Top Section: Image Slider (60% height) */}
@@ -79,6 +80,14 @@ export default function HotelCard({ hotel }: HotelCardProps) {
             <div className="absolute top-4 left-4 z-30 bg-blue-500/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0_4px_15px_rgba(59,130,246,0.4)] border border-white/20">
               <FaCheckCircle className="text-[10px]" />
               <span>موثوق</span>
+            </div>
+         )}
+
+         {/* Breakfast Badge (Floating) */}
+         {hotel.breakfastIncluded && (
+            <div className="absolute bottom-4 right-4 z-30 bg-emerald-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg border border-white/20 animate-pulse">
+              <FaCoffee className="text-[10px]" />
+              <span>شامل الإفطار</span>
             </div>
          )}
 
@@ -172,7 +181,7 @@ export default function HotelCard({ hotel }: HotelCardProps) {
         <Link href={linkHref} className="block">
         <div className="flex justify-between items-start mb-2">
             <div>
-                <h3 className="text-xl font-bold text-white group-hover:text-[#D4AF37] transition-colors mb-1 line-clamp-1">
+                <h3 className="text-xl font-bold text-white group-hover:text-[#D4AF37] transition-colors mb-1 line-clamp-1 font-cairo">
                 {hotel.name || "فندق مكة المكرمة"}
                 </h3>
                 {hotel.stars && (
@@ -186,9 +195,9 @@ export default function HotelCard({ hotel }: HotelCardProps) {
             
             {/* Price Badge */}
             {(hotel.price || 0) > 0 && (
-                <div className="bg-[#D4AF37]/10 border border-[#D4AF37]/30 px-3 py-1 rounded-lg">
-                    <span className="text-[#D4AF37] font-bold text-lg">{hotel.price}</span>
-                    <span className="text-[10px] text-gray-400 block -mt-1 text-center">ريال/ليلة</span>
+                <div className="bg-[#D4AF37]/10 border border-[#D4AF37]/30 px-3 py-1 rounded-lg shadow-[0_0_15px_rgba(212,175,55,0.1)]">
+                    <span className="bg-gradient-to-r from-[#D4AF37] to-[#F8F1C0] bg-clip-text text-transparent font-bold text-xl font-mono block text-center">{hotel.price}</span>
+                    <span className="text-[10px] text-zinc-400 block -mt-1 text-center font-cairo">ريال/ليلة</span>
                 </div>
             )}
         </div>
@@ -205,28 +214,35 @@ export default function HotelCard({ hotel }: HotelCardProps) {
                  {/* Weekend Price */}
                  {hotel.weekendPrice && hotel.weekendPrice > 0 && (
                     <div className="flex justify-between items-center text-zinc-300">
-                        <span>سعر الويك إند:</span>
-                        <span className="text-[#D4AF37] font-bold font-mono">{hotel.weekendPrice} ريال</span>
+                        <span className="font-medium">سعر الويك إند:</span>
+                        <span className="text-[#D4AF37] font-bold font-mono text-base">{hotel.weekendPrice} <span className="text-[10px] font-cairo">ريال</span></span>
                     </div>
                  )}
                  {/* Extra Bed Price */}
                  {hotel.extraBedPrice && hotel.extraBedPrice > 0 && (
                     <div className="flex justify-between items-center text-zinc-300">
-                        <span>السرير الإضافي:</span>
-                        <span className="text-[#D4AF37] font-bold font-mono">{hotel.extraBedPrice} ريال</span>
+                        <span className="font-medium">السرير الإضافي:</span>
+                        <span className="text-[#D4AF37] font-bold font-mono text-base">{hotel.extraBedPrice} <span className="text-[10px] font-cairo">ريال</span></span>
                     </div>
                  )}
             </div>
 
-            <div className="flex items-center text-gray-400 text-xs mb-4 gap-2">
+            <div className="flex items-center text-gray-400 text-xs mb-4 gap-3">
                 <div className="flex items-center gap-1">
                    <FaMapMarkerAlt className="text-[#D4AF37]" />
-                   <span className="line-clamp-1">{hotel.location?.replace("موقع الفندق", "").replace("...", "").trim() || "مكة المكرمة"}</span>
+                   <span className="line-clamp-1 font-medium">{hotel.location?.replace("موقع الفندق", "").replace("...", "").trim() || "مكة المكرمة"}</span>
                 </div>
                 {hotel.distanceToHaram && (
-                    <div className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded text-[10px] text-[#D4AF37]">
+                    <div className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded text-[10px] text-[#D4AF37] border border-white/5">
                         <span>🕋</span>
                         <span>{hotel.distanceToHaram} م</span>
+                    </div>
+                )}
+                {/* Breakfast Text (In Info Bar) - Optional fallback if visual badge isn't enough */}
+                {hotel.breakfastIncluded && (
+                    <div className="flex items-center gap-1 text-emerald-400 font-bold text-[10px]">
+                        <FaCoffee />
+                        <span>إفطار</span>
                     </div>
                 )}
             </div>

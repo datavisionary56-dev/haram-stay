@@ -9,6 +9,7 @@ interface Hotel {
   stars: number;
   price: number;
   extraBedPrice?: number;
+  breakfastIncluded?: boolean;
   [key: string]: unknown;
 }
 

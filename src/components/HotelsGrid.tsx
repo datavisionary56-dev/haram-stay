@@ -40,6 +40,7 @@ export default function HotelsGrid() {
           distance: data.distance || "",
           streetName: data.streetName || "",
           category: data.category || "front_row", // Default to front_row if missing
+          breakfastIncluded: data.breakfastIncluded || false,
           ...data
         } as Hotel;
       });
