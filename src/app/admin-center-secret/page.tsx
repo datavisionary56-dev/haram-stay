@@ -30,11 +30,32 @@ export default function AdminSecretPage() {
 
   const [files, setFiles] = useState<FileList | null>(null);
   const [projectId, setProjectId] = useState('');
+  
+  // Global Status State
+  const [currentCrowdLevel, setCurrentCrowdLevel] = useState('low');
 
   const addLog = (message: string, type: 'info' | 'error' | 'success' = 'info') => {
     const timestamp = new Date().toLocaleTimeString();
     const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
     setLogs(prev => [`[${timestamp}] ${prefix} ${message}`, ...prev]);
+  };
+
+  const handleUpdateGlobalStatus = async () => {
+    setLoading(true);
+    addLog("جاري تحديث الحالة العامة...", 'info');
+    try {
+        await setDoc(doc(db, "system_status", "makkah_live"), {
+            crowdLevel: currentCrowdLevel,
+            lastUpdated: new Date().toISOString()
+        }, { merge: true });
+        addLog("✅ تم تحديث الحالة العامة بنجاح!", 'success');
+        alert("تم تحديث الحالة بنجاح");
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        addLog(`❌ فشل التحديث: ${message}`, 'error');
+    } finally {
+        setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -315,6 +336,39 @@ export default function AdminSecretPage() {
                 العودة للرئيسية <FaArrowRight />
             </Link>
           </div>
+        </div>
+
+        {/* Global Settings Section (Live Status) */}
+        <div className="bg-gray-800 border border-[#D4AF37]/30 rounded-xl p-6 mb-8 shadow-lg">
+            <h2 className="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2 flex items-center gap-2">
+                <span>🔴</span> حالة مكة المكرمة (Live Status)
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                <div>
+                    <label className="block text-gray-400 text-sm mb-2">حالة الزحام (Crowd Level)</label>
+                    <select 
+                        value={currentCrowdLevel}
+                        onChange={(e) => setCurrentCrowdLevel(e.target.value)}
+                        className="w-full bg-gray-900 border border-gray-700 text-white p-3 rounded-lg focus:ring-[#D4AF37] focus:ring-2"
+                    >
+                        <option value="low">خفيف (Low)</option>
+                        <option value="moderate">متوسط (Moderate)</option>
+                        <option value="crowded">مزدحم (Crowded)</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <button 
+                        onClick={handleUpdateGlobalStatus}
+                        disabled={loading}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg"
+                    >
+                        {loading ? 'جاري التحديث...' : 'تحديث الحالة العامة'}
+                    </button>
+                </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">* يتم تحديث الطقس تلقائياً من المصادر الجوية.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cairo, Tajawal } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import TopBar from "@/components/TopBar";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -40,10 +41,16 @@ export default function RootLayout({
     <html lang="ar" dir="rtl">
       <body className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} ${tajawal.variable} antialiased bg-black font-sans`}>
         {/* الهيدر سيظهر في كل الصفحات */}
-        <Navbar />
+        <div className="fixed top-0 left-0 right-0 z-[1000]">
+           <TopBar />
+           <Navbar />
+        </div>
         
-        {/* المحتوى المتغير */}
-        {children}
+        {/* Padding for fixed header */}
+        <div className="pt-24">
+           {/* المحتوى المتغير */}
+           {children}
+        </div>
 
         {/* زر واتساب العائم */}
         <a
