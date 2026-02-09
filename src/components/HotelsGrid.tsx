@@ -63,13 +63,33 @@ export default function HotelsGrid() {
   // Filter hotels by category
   const frontRowHotels = hotels.filter(h => h.category === 'front_row');
   const ajyadKhalilHotels = hotels.filter(h => h.category === 'ajyad_khalil');
-  const madinahHotels = hotels.filter(h => h.category === 'madinah');
+  const madinahCentralHotels = hotels.filter(h => h.category === 'madinah_central' || h.category === 'madinah'); // Includes legacy 'madinah'
+  const madinahOuterHotels = hotels.filter(h => h.category === 'madinah_outer');
 
   return (
     <div className="w-full flex flex-col gap-8 pb-20">
+      
+      {/* Makkah Header */}
+      <div className="flex items-center gap-4 mb-4 mt-8 px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-white font-cairo drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] flex items-center gap-3">
+          <span>🌙</span> فنادق مكة المكرمة
+        </h2>
+        <div className="h-1 flex-grow bg-gradient-to-r from-[#D4AF37] to-transparent rounded-full opacity-50"></div>
+      </div>
+
       <HotelMarqueeSection title="فنادق الصف الأول" hotels={frontRowHotels} />
       <HotelMarqueeSection title="فنادق إبراهيم الخليل وأجياد" hotels={ajyadKhalilHotels} />
-      <HotelMarqueeSection title="فنادق المدينة المنورة" hotels={madinahHotels} />
+      
+      {/* Medina Header */}
+      <div className="flex items-center gap-4 mb-4 mt-12 px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-white font-cairo drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] flex items-center gap-3">
+          <span>🌙</span> فنادق المدينة المنورة
+        </h2>
+        <div className="h-1 flex-grow bg-gradient-to-r from-[#D4AF37] to-transparent rounded-full opacity-50"></div>
+      </div>
+
+      <HotelMarqueeSection title="فنادق المدينة - المركزية" hotels={madinahCentralHotels} />
+      <HotelMarqueeSection title="فنادق المدينة - خارج المركزية" hotels={madinahOuterHotels} />
       
       {hotels.length === 0 && (
           <div className="text-center py-20 text-gray-500">

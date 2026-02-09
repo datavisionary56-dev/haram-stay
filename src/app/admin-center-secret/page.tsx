@@ -511,7 +511,8 @@ export default function AdminSecretPage() {
                     >
                       <option value="front_row">فنادق الصف الأول (Front Row)</option>
                       <option value="ajyad_khalil">فنادق إبراهيم الخليل وأجياد</option>
-                      <option value="madinah">فنادق المدينة المنورة</option>
+                      <option value="madinah_central">فنادق المدينة - المركزية</option>
+                      <option value="madinah_outer">فنادق المدينة - خارج المركزية</option>
                     </select>
                   </div>
                 </div>
