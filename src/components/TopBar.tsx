@@ -230,5 +230,6 @@ export default function TopBar() {
          </motion.div>
       </div>
     </div>
+    </div>
   );
 }
