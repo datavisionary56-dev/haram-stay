@@ -319,7 +319,7 @@ export default function AdminSecretPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans" dir="rtl">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-40 pb-12">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-[#D4AF37]">Admin Center</h1>
