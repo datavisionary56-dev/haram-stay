@@ -28,8 +28,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HaramStay | عروض فنادق مكة المكرمة في رمضان 2025",
-  description: "اكتشف أفضل عروض فنادق مكة المكرمة لرمضان 2025. حجوزات مؤكدة وأسعار تنافسية بالقرب من الحرم المكي الشريف.",
+  title: "HaramStay | عروض فنادق مكة المكرمة في رمضان 1447هـ",
+  description: "اكتشف أفضل عروض فنادق مكة المكرمة لرمضان 1447هـ. حجوزات مؤكدة وأسعار تنافسية بالقرب من الحرم المكي الشريف.",
 };
 
 export default function RootLayout({

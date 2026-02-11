@@ -42,7 +42,7 @@ export default function BookingsPage() {
         >
           <input 
             type="text" 
-            placeholder="مثال: #BK-2025-XXXX"
+            placeholder="مثال: #BK-1447-XXXX"
             value={refNumber}
             onChange={(e) => setRefNumber(e.target.value)}
             className="flex-grow bg-transparent text-white p-4 outline-none text-center md:text-right placeholder-gray-600 font-mono"

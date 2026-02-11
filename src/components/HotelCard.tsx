@@ -83,9 +83,9 @@ export default function HotelCard({ hotel }: HotelCardProps) {
             </div>
          )}
 
-         {/* Breakfast Badge (Floating) */}
+         {/* Breakfast Badge (Floating & Glowing) */}
          {hotel.breakfastIncluded && (
-            <div className="absolute bottom-4 right-4 z-30 bg-emerald-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg border border-white/20 animate-pulse">
+            <div className="absolute bottom-4 right-4 z-30 bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0_0_20px_rgba(16,185,129,0.6)] border border-emerald-400 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]">
               <FaCoffee className="text-[10px]" />
               <span>شامل الإفطار</span>
             </div>

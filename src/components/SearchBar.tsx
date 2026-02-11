@@ -13,78 +13,57 @@ export default function SearchBar() {
   }
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-6 z-20 mx-auto flex w-full max-w-5xl justify-center px-4 sm:px-6 lg:px-8">
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
       <form
-        lang="en-US"
-        dir="ltr"
+        dir="rtl"
         onSubmit={submitSearch}
-        className="pointer-events-auto grid w-full grid-cols-1 gap-2 rounded-2xl border border-white/15 bg-white/10 p-3 backdrop-blur-lg sm:grid-cols-[1.2fr,1fr,1fr,0.8fr,auto] dark:border-white/10 dark:bg-white/5"
+        className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-lg sm:grid-cols-[1.2fr,1fr,1fr,0.8fr,0.8fr,auto] dark:border-white/10 dark:bg-white/5 font-cairo shadow-2xl"
       >
-        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2">
-          <span className="text-gold">★</span>
-          <label className="sr-only">Destination</label>
+        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 border border-white/5 focus-within:border-[#D4AF37]/50 transition-colors">
+          <span className="text-[#D4AF37]">📍</span>
+          <label className="sr-only">الوجهة</label>
           <select
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
-            className="w-full bg-transparent text-sm text-white outline-none font-sans"
+            className="w-full bg-transparent text-sm text-white outline-none font-sans cursor-pointer"
           >
             <option value="Makkah" className="text-black">
-              Makkah
+              مكة المكرمة
             </option>
             <option value="Madinah" className="text-black">
-              Madinah
+              المدينة المنورة
             </option>
           </select>
         </div>
 
-        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2">
-          <label className="sr-only">Check-in</label>
+        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 border border-white/5 focus-within:border-[#D4AF37]/50 transition-colors">
+          <label className="sr-only">تاريخ الوصول</label>
           <input
-            type="date"
+            type="text"
+            onFocus={(e) => (e.target.type = "date")}
+            onBlur={(e) => (e.target.type = "text")}
             value={checkIn}
             onChange={(e) => setCheckIn(e.target.value)}
-            lang="en-US"
-            dir="ltr"
-            className="w-full appearance-none bg-transparent text-sm text-white outline-none placeholder:text-white/60 font-sans"
-            placeholder="Add Dates"
+            className="w-full appearance-none bg-transparent text-sm text-white outline-none placeholder:text-white/60 font-sans text-right"
+            placeholder="تاريخ الوصول"
           />
-          {checkIn && (
-            <span className="text-xs text-white/80">
-              {new Date(checkIn).toLocaleDateString("en-US", {
-                weekday: "short",
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
-            </span>
-          )}
         </div>
 
-        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2">
-          <label className="sr-only">Check-out</label>
+        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 border border-white/5 focus-within:border-[#D4AF37]/50 transition-colors">
+          <label className="sr-only">تاريخ المغادرة</label>
           <input
-            type="date"
+            type="text"
+            onFocus={(e) => (e.target.type = "date")}
+            onBlur={(e) => (e.target.type = "text")}
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
-            lang="en-US"
-            dir="ltr"
-            className="w-full appearance-none bg-transparent text-sm text-white outline-none placeholder:text-white/60 font-sans"
-            placeholder="Add Dates"
+            className="w-full appearance-none bg-transparent text-sm text-white outline-none placeholder:text-white/60 font-sans text-right"
+            placeholder="تاريخ المغادرة"
           />
-          {checkOut && (
-            <span className="text-xs text-white/80">
-              {new Date(checkOut).toLocaleDateString("en-US", {
-                weekday: "short",
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
-            </span>
-          )}
         </div>
 
-        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2">
-          <label className="sr-only">Guests</label>
+        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 border border-white/5 focus-within:border-[#D4AF37]/50 transition-colors">
+          <label className="sr-only">الضيوف</label>
           <input
             type="number"
             min={1}
@@ -92,18 +71,16 @@ export default function SearchBar() {
             onChange={(e) => setGuests(parseInt(e.target.value || "1", 10))}
             inputMode="numeric"
             pattern="[0-9]*"
-            lang="en-US"
-            dir="ltr"
             className="w-full bg-transparent text-sm text-white outline-none font-sans"
-            placeholder="Guests"
+            placeholder="الضيوف"
           />
-          <span className="text-xs text-white/80">
-            {guests.toLocaleString("en-US")} {guests === 1 ? "Guest" : "Guests"}
+          <span className="text-xs text-white/80 whitespace-nowrap">
+            {guests === 1 ? "ضيف" : "ضيوف"}
           </span>
         </div>
 
-        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2">
-          <label className="sr-only">Rooms</label>
+        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 border border-white/5 focus-within:border-[#D4AF37]/50 transition-colors">
+          <label className="sr-only">الغرف</label>
           <input
             type="number"
             min={1}
@@ -111,21 +88,19 @@ export default function SearchBar() {
             onChange={(e) => setRooms(parseInt(e.target.value || "1", 10))}
             inputMode="numeric"
             pattern="[0-9]*"
-            lang="en-US"
-            dir="ltr"
             className="w-full bg-transparent text-sm text-white outline-none font-sans"
-            placeholder="Rooms"
+            placeholder="الغرف"
           />
-          <span className="text-xs text-white/80">
-            {rooms.toLocaleString("en-US")} {rooms === 1 ? "Room" : "Rooms"}
+          <span className="text-xs text-white/80 whitespace-nowrap">
+            {rooms === 1 ? "غرفة" : "غرف"}
           </span>
         </div>
 
         <button
           type="submit"
-          className="col-span-1 rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-white hover:opacity-90 hover:ring-2 hover:ring-gold sm:col-auto"
+          className="col-span-1 rounded-xl bg-[#D4AF37] px-8 py-2 text-sm font-bold text-black hover:bg-[#b5952f] transition-colors shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.6)] sm:col-auto"
         >
-          Search
+          بحث
         </button>
       </form>
     </div>

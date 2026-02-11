@@ -68,7 +68,7 @@ export default function Footer() {
           <p className="flex items-center justify-center gap-2 mb-4">
             صنع بحب <FaHeart className="text-red-500" /> في مكة المكرمة
           </p>
-         <p>&copy; {new Date().getFullYear()} HaramStay. جميع الحقوق محفوظة. <span className="text-gray-600 text-xs ml-2">v2.4 (Medina Split + Headers)</span></p>
+         <p>&copy; {new Date().getFullYear()} HaramStay. جميع الحقوق محفوظة. <span className="text-gray-600 text-xs ml-2">v3.0 (Dynamic Luxury Edition)</span></p>
           
           {/* Admin Link */}
           <div className="mt-6 flex justify-center">

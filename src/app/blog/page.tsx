@@ -6,7 +6,7 @@ import { FaCalendarAlt, FaUser, FaClock } from 'react-icons/fa';
 export const articles = [
   {
     id: "umrah-guide-step-by-step",
-    title: "دليل مناسك العمرة خطوة بخطوة (2025)",
+    title: "دليل مناسك العمرة خطوة بخطوة (1447هـ)",
     excerpt: "شرح مفصل ومصور لكيفية أداء مناسك العمرة، بدءاً من الإحرام وحتى التحلل، مع نصائح هامة للمعتمرين.",
     content: `
       <div class="space-y-6 text-lg leading-relaxed text-gray-200">
@@ -58,7 +58,7 @@ export const articles = [
   },
   {
     id: "best-hotels-kaaba-view",
-    title: "أفضل 5 فنادق مطلة على الكعبة (تحديث 2025)",
+    title: "أفضل 5 فنادق مطلة على الكعبة (تحديث 1447هـ)",
     excerpt: "قائمة مختارة لأرقى الفنادق التي توفر إطلالات بانورامية مباشرة على الكعبة المشرفة والمسجد الحرام.",
     content: `
       <div class="space-y-6 text-lg leading-relaxed text-gray-200">

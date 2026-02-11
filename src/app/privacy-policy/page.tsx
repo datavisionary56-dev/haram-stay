@@ -6,7 +6,7 @@ export default function PrivacyPolicy() {
       <div className="max-w-4xl mx-auto space-y-8">
         <header className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-[#D4AF37] mb-4">سياسة الخصوصية</h1>
-          <p className="text-gray-400">آخر تحديث: 2025</p>
+          <p className="text-gray-400">آخر تحديث: 1447هـ</p>
         </header>
 
         <section className="bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800">

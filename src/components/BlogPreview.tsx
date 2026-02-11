@@ -6,7 +6,7 @@ export default function BlogPreview() {
   const articles = [
     {
       id: "umrah-guide-step-by-step",
-      title: "دليل مناسك العمرة خطوة بخطوة (2025)",
+      title: "دليل مناسك العمرة خطوة بخطوة (1447هـ)",
       excerpt: "شرح مفصل ومصور لكيفية أداء مناسك العمرة، بدءاً من الإحرام وحتى التحلل.",
       image: "https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?q=80&w=800&auto=format&fit=crop",
       date: "12 رمضان 1446"
