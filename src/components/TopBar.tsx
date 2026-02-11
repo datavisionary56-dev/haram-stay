@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useLanguage } from "@/context/LanguageContext";
+import { FaCloudSun, FaCloudMoon, FaSun, FaMoon, FaCircle, FaTemperatureHigh } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 export default function TopBar() {
   const { t, language } = useLanguage();
