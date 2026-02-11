@@ -8,7 +8,6 @@ import Footer from "@/components/Footer";
 import TrustFeatures from "@/components/TrustFeatures";
 import Testimonials from "@/components/Testimonials";
 import LiveStream from "@/components/LiveStream";
-import SearchBar from "@/components/SearchBar";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function HomePage() {
@@ -80,19 +79,6 @@ export default function HomePage() {
                   <br />
                   {t.heroSubtitle}
                 </motion.p>
-
-                {/* Interactive Hero Search */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: [0, -10, 0] }}
-                  transition={{ 
-                    opacity: { duration: 0.8, delay: 0.8 },
-                    y: { duration: 6, repeat: Infinity, ease: "easeInOut" }
-                  }}
-                  className="w-full relative z-30"
-                >
-                  <SearchBar />
-                </motion.div>
             </div>
 
             <motion.div 
