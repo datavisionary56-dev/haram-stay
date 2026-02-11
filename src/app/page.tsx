@@ -8,9 +8,12 @@ import Footer from "@/components/Footer";
 import TrustFeatures from "@/components/TrustFeatures";
 import Testimonials from "@/components/Testimonials";
 import LiveStream from "@/components/LiveStream";
+import SearchBar from "@/components/SearchBar";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
+  const { t, language } = useLanguage();
   // const [showAdmin, setShowAdmin] = useState(false);
 
   useEffect(() => {
@@ -22,7 +25,7 @@ export default function HomePage() {
   if (!mounted) return null;
 
   return (
-    <main className="min-h-screen relative font-sans text-white overflow-x-hidden" dir="rtl">
+    <main className="min-h-screen relative font-sans text-white overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       
       {/* Cinematic Background */}
       <div className="fixed inset-0 z-0">
@@ -61,8 +64,8 @@ export default function HomePage() {
                     <FaMoon className="text-[#D4AF37] text-3xl mx-auto animate-pulse" />
                   </div>
                   <h2 className="text-5xl md:text-7xl font-bold text-white drop-shadow-2xl mb-6 leading-tight">
-                    إقامة تليق بضيوف الرحمن <br />
-                    <span className="text-[#D4AF37]">في رمضان</span>
+                    {t.heroTitle} <br />
+                    <span className="text-[#D4AF37]">{language === 'ar' ? "في رمضان" : "In Ramadan"}</span>
                   </h2>
                 </motion.div>
                 
@@ -72,9 +75,11 @@ export default function HomePage() {
                   transition={{ duration: 0.8, delay: 0.6 }}
                   className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-light leading-relaxed bg-black/30 p-6 rounded-2xl backdrop-blur-sm border border-white/10"
                 >
-                  نقدم لك تجربة روحانية متكاملة بجوار الحرم المكي الشريف. 
+                  {language === 'ar' 
+                    ? "نقدم لك تجربة روحانية متكاملة بجوار الحرم المكي الشريف." 
+                    : "We offer you a complete spiritual experience near the Holy Haram."}
                   <br />
-                  أسعار خاصة وحصرية لموسم رمضان والعمرة 1447هـ.
+                  {t.heroSubtitle}
                 </motion.p>
 
                 {/* Interactive Hero Search */}

@@ -28,13 +28,24 @@
 }
 
 body {
-  background: 
+  /* Mesh Gradient Background */
+  background-color: #0f0f0f;
+  background-image: 
     radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
     radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
     radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-  background-color: #000;
   background-attachment: fixed;
+  background-size: cover;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Cairo', Arial, Helvetica, sans-serif;
   min-height: 100vh;
+}
+
+/* Golden Glow Hover Effect */
+.hover-glow-gold {
+  transition: all 0.3s ease;
+}
+.hover-glow-gold:hover {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), 0 0 40px rgba(212, 175, 55, 0.2);
+  border-color: rgba(212, 175, 55, 0.8);
 }

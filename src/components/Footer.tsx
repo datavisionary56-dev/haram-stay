@@ -1,10 +1,14 @@
+"use client";
 import React from 'react';
 import { FaHeart, FaTwitter, FaInstagram, FaSnapchatGhost, FaWhatsapp } from 'react-icons/fa';
 import Link from 'next/link';
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
+  const { t, language } = useLanguage();
+
   return (
-    <footer className="bg-gray-900 text-white pt-16 pb-8 font-cairo relative z-30 border-t border-white/10">
+    <footer className="bg-gray-900 text-white pt-16 pb-8 font-cairo relative z-30 border-t border-white/10" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           
@@ -12,38 +16,39 @@ export default function Footer() {
           <div>
             <h3 className="text-2xl font-bold text-[#D4AF37] mb-4">HaramStay</h3>
             <p className="text-gray-400 leading-relaxed text-sm">
-              منصتك الأولى والموثوقة لحجز فنادق مكة المكرمة والمدينة المنورة. نسعى لتقديم أفضل العروض والخدمات لضيوف الرحمن، مع ضمان الراحة والجودة في كل خطوة.
+              {language === 'ar' 
+                ? "منصتك الأولى والموثوقة لحجز فنادق مكة المكرمة والمدينة المنورة. نسعى لتقديم أفضل العروض والخدمات لضيوف الرحمن، مع ضمان الراحة والجودة في كل خطوة."
+                : "Your #1 trusted platform for booking hotels in Makkah and Madinah. We strive to provide the best offers and services for the guests of Rahman, ensuring comfort and quality at every step."}
             </p>
           </div>
           
           {/* Company Links */}
           <div>
-            <h4 className="text-lg font-bold mb-4 text-white">الشركة</h4>
+            <h4 className="text-lg font-bold mb-4 text-white">{language === 'ar' ? "الشركة" : "Company"}</h4>
             <ul className="space-y-3 text-gray-400 text-sm">
-              <li><Link href="/about" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>←</span> من نحن</Link></li>
-              <li><Link href="/contact" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>←</span> اتصل بنا</Link></li>
-              {/* <li><Link href="/careers" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>←</span> فرص العمل</Link></li> */}
+              <li><Link href="/about" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>{language === 'ar' ? "←" : "→"}</span> {language === 'ar' ? "من نحن" : "About Us"}</Link></li>
+              <li><Link href="/contact" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>{language === 'ar' ? "←" : "→"}</span> {language === 'ar' ? "اتصل بنا" : "Contact Us"}</Link></li>
             </ul>
           </div>
 
           {/* Legal & Support Links */}
           <div>
-            <h4 className="text-lg font-bold mb-4 text-white">معلومات ودعم</h4>
+            <h4 className="text-lg font-bold mb-4 text-white">{language === 'ar' ? "معلومات ودعم" : "Info & Support"}</h4>
             <ul className="space-y-3 text-gray-400 text-sm">
-              <li><Link href="/terms" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>←</span> شروط الخدمة</Link></li>
-              <li><Link href="/privacy-policy" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>←</span> سياسة الخصوصية</Link></li>
-              <li><Link href="/faq" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>←</span> الأسئلة الشائعة</Link></li>
+              <li><Link href="/terms" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>{language === 'ar' ? "←" : "→"}</span> {language === 'ar' ? "شروط الخدمة" : "Terms of Service"}</Link></li>
+              <li><Link href="/privacy-policy" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>{language === 'ar' ? "←" : "→"}</span> {language === 'ar' ? "سياسة الخصوصية" : "Privacy Policy"}</Link></li>
+              <li><Link href="/faq" className="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span>{language === 'ar' ? "←" : "→"}</span> {language === 'ar' ? "الأسئلة الشائعة" : "FAQ"}</Link></li>
             </ul>
           </div>
 
           {/* Contact & Social */}
           <div>
-            <h4 className="text-lg font-bold mb-4 text-white">تواصل معنا</h4>
+            <h4 className="text-lg font-bold mb-4 text-white">{language === 'ar' ? "تواصل معنا" : "Connect With Us"}</h4>
             <ul className="space-y-4 text-gray-400">
               <li className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5 hover:border-[#D4AF37]/30 transition-all">
                 <FaWhatsapp className="text-[#25D366] text-xl" />
                 <div className="flex flex-col">
-                    <span className="text-xs text-gray-500">واتساب (حجز فوري)</span>
+                    <span className="text-xs text-gray-500">{language === 'ar' ? "واتساب (حجز فوري)" : "WhatsApp (Instant Booking)"}</span>
                     <a href="https://wa.me/966548690356" target="_blank" rel="noopener noreferrer" className="text-white font-bold hover:text-[#D4AF37] dir-ltr">
                     +966 54 869 0356
                     </a>
@@ -66,9 +71,9 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 pt-8 mt-8 text-center text-gray-400 text-sm">
           <p className="flex items-center justify-center gap-2 mb-4">
-            صنع بحب <FaHeart className="text-red-500" /> في مكة المكرمة
+            {language === 'ar' ? "صنع بحب" : "Made with love"} <FaHeart className="text-red-500" /> {language === 'ar' ? "في مكة المكرمة" : "in Makkah Al Mukarramah"}
           </p>
-         <p>&copy; {new Date().getFullYear()} HaramStay. جميع الحقوق محفوظة. <span className="text-gray-600 text-xs ml-2">v3.0 (Dynamic Luxury Edition)</span></p>
+         <p>&copy; {new Date().getFullYear()} HaramStay. {t.footerRights}. <span className="text-gray-600 text-xs ml-2">v3.2 (Full Fix & Multilingual)</span></p>
           
           {/* Admin Link */}
           <div className="mt-6 flex justify-center">

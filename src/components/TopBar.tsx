@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { FaCloudSun, FaCloudMoon, FaSun, FaMoon, FaCircle, FaTemperatureHigh } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function TopBar() {
+  const { t, language } = useLanguage();
   const [weather, setWeather] = useState<{ temp: string; condition: string; isDay: boolean } | null>(null);
   const [crowdStatus, setCrowdStatus] = useState<"low" | "moderate" | "crowded">("low");
   const [currentTime, setCurrentTime] = useState("");
@@ -44,10 +44,10 @@ export default function TopBar() {
   // Real-time Clock
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }));
+      setCurrentTime(new Date().toLocaleTimeString(language === 'ar' ? 'ar-SA' : 'en-US', { hour: '2-digit', minute: '2-digit' }));
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [language]);
 
   // Listen to Crowd Status from Firestore
   useEffect(() => {
@@ -66,13 +66,13 @@ export default function TopBar() {
   const getCrowdInfo = (status: string) => {
     switch (status) {
       case "low":
-        return { text: "خفيف", color: "text-emerald-400", dot: "bg-emerald-500" };
+        return { text: language === 'ar' ? "خفيف" : "Low", color: "text-emerald-400", dot: "bg-emerald-500" };
       case "moderate":
-        return { text: "متوسط", color: "text-yellow-400", dot: "bg-yellow-500" };
+        return { text: language === 'ar' ? "متوسط" : "Moderate", color: "text-yellow-400", dot: "bg-yellow-500" };
       case "crowded":
-        return { text: "مزدحم", color: "text-red-500", dot: "bg-red-500" };
+        return { text: language === 'ar' ? "مزدحم" : "Crowded", color: "text-red-500", dot: "bg-red-500" };
       default:
-        return { text: "خفيف", color: "text-emerald-400", dot: "bg-emerald-500" };
+        return { text: language === 'ar' ? "خفيف" : "Low", color: "text-emerald-400", dot: "bg-emerald-500" };
     }
   };
 
@@ -90,11 +90,11 @@ export default function TopBar() {
       <div className="flex items-center gap-4 md:gap-6">
         {/* Live Indicator */}
         <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.7)]"></span>
             </span>
-            <span className="font-bold text-red-500 tracking-wider">Makkah Live</span>
+            <span className="font-bold text-red-500 tracking-wider animate-pulse">{t.live}</span>
         </div>
 
         {/* Crowd Status */}
