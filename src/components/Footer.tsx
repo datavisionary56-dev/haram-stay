@@ -73,7 +73,7 @@ export default function Footer() {
           <p className="flex items-center justify-center gap-2 mb-4">
             {language === 'ar' ? "صنع بحب" : "Made with love"} <FaHeart className="text-red-500" /> {language === 'ar' ? "في مكة المكرمة" : "in Makkah Al Mukarramah"}
           </p>
-         <p>&copy; {new Date().getFullYear()} HaramStay. {t.footerRights}. <span className="text-gray-600 text-xs ml-2">v3.2 (Full Fix & Multilingual)</span></p>
+         <p>&copy; {language === 'ar' ? '1447هـ' : '1447 AH'} HaramStay. {t.footerRights}. <span className="text-gray-600 text-xs ml-2">v3.3 (Live Tawaf & Hijri)</span></p>
           
           {/* Admin Link */}
           <div className="mt-6 flex justify-center">

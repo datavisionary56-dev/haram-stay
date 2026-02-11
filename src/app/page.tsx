@@ -64,9 +64,8 @@ export default function HomePage() {
                     <FaMoon className="text-[#D4AF37] text-3xl mx-auto animate-pulse" />
                   </div>
                   <h2 className="text-5xl md:text-7xl font-bold text-white drop-shadow-2xl mb-6 leading-tight">
-                    {t.heroTitle} <br />
-                    <span className="text-[#D4AF37]">{language === 'ar' ? "في رمضان" : "In Ramadan"}</span>
-                  </h2>
+            {t.heroTitle}
+          </h2>
                 </motion.div>
                 
                 <motion.p 

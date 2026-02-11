@@ -48,7 +48,7 @@ const translations: Record<Language, Translations> = {
     verified: "موثوق"
   },
   en: {
-    heroTitle: "Stay Worthy of the Guests of Rahman",
+    heroTitle: "Makkah & Madinah Hotels - Season 1447 AH",
     heroSubtitle: "Exclusive prices for Ramadan & Umrah Season 1447 AH",
     searchPlaceholder: "Search for a hotel...",
     makkahHotels: "Makkah Hotels",
