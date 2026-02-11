@@ -112,9 +112,51 @@ export default function TopBar() {
 
   const crowdInfo = getCrowdInfo(crowdStatus);
 
+  // Flash Sale State
+  const [flashSale, setFlashSale] = useState<{ hotelName: string; price: string; message: string; isActive: boolean } | null>(null);
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "settings", "flash-sale"), (doc) => {
+      if (doc.exists()) {
+        const data = doc.data();
+        if (data.isActive) {
+          setFlashSale({
+            hotelName: data.hotelName,
+            price: data.price,
+            message: data.message,
+            isActive: data.isActive
+          });
+        } else {
+          setFlashSale(null);
+        }
+      }
+    });
+    return () => unsub();
+  }, []);
+
   return (
-    <div 
-        className="w-full h-auto min-h-[40px] border-b border-white/10 flex flex-col md:flex-row items-center justify-between px-4 py-2 text-xs md:text-sm font-cairo z-50 relative gap-2"
+    <div className="flex flex-col w-full z-50 relative">
+      {/* Flash Sale Marquee */}
+      {flashSale && (
+        <div className="w-full bg-[#D4AF37] text-black text-xs md:text-sm font-bold py-1 overflow-hidden relative z-[60]">
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: "-100%" }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="whitespace-nowrap flex items-center gap-8"
+          >
+            {[...Array(5)].map((_, i) => (
+              <span key={i} className="flex items-center gap-2">
+                <span className="text-red-600 animate-pulse">⚡</span> 
+                {language === 'ar' ? "عرض فلاش:" : "FLASH SALE:"} {flashSale.hotelName} {language === 'ar' ? "بـ" : "at"} {flashSale.price} {language === 'ar' ? "ريال" : "SAR"} - {flashSale.message}
+              </span>
+            ))}
+          </motion.div>
+        </div>
+      )}
+
+      <div 
+        className="w-full h-auto min-h-[40px] border-b border-white/10 flex flex-col md:flex-row items-center justify-between px-4 py-2 text-xs md:text-sm font-cairo"
         style={{
             background: "rgba(255, 255, 255, 0.03)",
             backdropFilter: "blur(10px)",
